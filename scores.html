@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="UPSC">
+  <meta name="theme-color" content="#0f1117">
+  <link rel="manifest" href="manifest.json">
+  <title>Scores — Tushar Progress</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <nav>
+    <span class="nav-brand">📚 Tushar</span>
+    <a href="index.html">Dashboard</a>
+    <a href="schedule.html">Schedule</a>
+    <a href="course.html">Course</a>
+    <a href="topics.html">Topics</a>
+    <a href="answers.html">Answers</a>
+    <a href="current-affairs.html">Curr. Affairs</a>
+    <a href="scores.html" class="active">Scores</a>
+    <a href="notes.html">Notes</a>
+  </nav>
+
+  <main>
+    <h1>Mock Test Scores</h1>
+
+    <div class="card-grid" id="scoreStats"></div>
+
+    <div class="card">
+      <h2>Add Score</h2>
+      <div class="form-row">
+        <div>
+          <label>Date</label>
+          <input type="date" id="sDate">
+        </div>
+        <div>
+          <label>Test Name</label>
+          <input type="text" id="sName" placeholder="Mock 1, Vision Test Series...">
+        </div>
+        <div>
+          <label>Subject</label>
+          <select id="sSubject">
+            <option value="anthro">Anthropology</option>
+            <option value="gs">General Studies</option>
+            <option value="csat">CSAT</option>
+            <option value="ml">ML Quiz</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div>
+          <label>Score</label>
+          <input type="number" id="sScore" min="0" placeholder="95">
+        </div>
+        <div>
+          <label>Max Marks</label>
+          <input type="number" id="sMax" min="1" placeholder="150">
+        </div>
+        <div>
+          <label>Notes</label>
+          <input type="text" id="sNotes" placeholder="Weak areas...">
+        </div>
+      </div>
+      <button class="btn" onclick="addScore()">Add Score</button>
+    </div>
+
+    <div class="card">
+      <h2>Score Trend</h2>
+      <div class="filter-bar">
+        <select id="chartFilter" onchange="renderChart()">
+          <option value="">All subjects</option>
+          <option value="anthro">Anthropology</option>
+          <option value="gs">General Studies</option>
+          <option value="csat">CSAT</option>
+          <option value="ml">ML Quiz</option>
+        </select>
+      </div>
+      <div class="chart-box">
+        <canvas id="scoreChart"></canvas>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>All Scores</h2>
+      <div class="filter-bar">
+        <select id="filterSubject" onchange="renderTable()">
+          <option value="">All subjects</option>
+          <option value="anthro">Anthropology</option>
+          <option value="gs">General Studies</option>
+          <option value="csat">CSAT</option>
+          <option value="ml">ML Quiz</option>
+        </select>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Date</th><th>Test</th><th>Subject</th><th>Score</th><th>%</th><th>Notes</th><th></th></tr>
+          </thead>
+          <tbody id="scoreBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/storage.js"></script>
+  <script>
+    document.getElementById('sDate').value = todayISO();
+
+    const subjectLabels = { anthro: 'Anthropology', gs: 'Gen. Studies', csat: 'CSAT', ml: 'ML Quiz' };
+    const subjectColors = { anthro: '#6c8ef5', gs: '#52c99e', csat: '#f5a623', ml: '#c77dff' };
+
+    function addScore() {
+      const score = parseFloat(document.getElementById('sScore').value);
+      const max = parseFloat(document.getElementById('sMax').value);
+      if (!document.getElementById('sName').value.trim()) { alert('Enter test name.'); return; }
+      if (isNaN(score) || isNaN(max) || max <= 0) { alert('Enter valid score and max marks.'); return; }
+      addTestScore({
+        date: document.getElementById('sDate').value || todayISO(),
+        name: document.getElementById('sName').value.trim(),
+        subject: document.getElementById('sSubject').value,
+        score,
+        maxScore: max,
+        notes: document.getElementById('sNotes').value.trim(),
+      });
+      document.getElementById('sName').value = '';
+      document.getElementById('sScore').value = '';
+      document.getElementById('sMax').value = '';
+      document.getElementById('sNotes').value = '';
+      renderAll();
+    }
+
+    function renderStats() {
+      const scores = getTestScores();
+      const best = scores.reduce((b, s) => Math.max(b, Math.round((s.score / s.maxScore) * 100)), 0);
+      const avg = scores.length ? Math.round(scores.reduce((s, x) => s + (x.score / x.maxScore) * 100, 0) / scores.length) : 0;
+      document.getElementById('scoreStats').innerHTML = `
+        <div class="stat-card"><div class="value">${scores.length}</div><div class="label">Tests Logged</div></div>
+        <div class="stat-card"><div class="value">${avg}%</div><div class="label">Avg Percentage</div></div>
+        <div class="stat-card"><div class="value">${best}%</div><div class="label">Best Score</div></div>`;
+    }
+
+    let chartInst = null;
+    function renderChart() {
+      const filter = document.getElementById('chartFilter').value;
+      let scores = getTestScores().filter(s => !filter || s.subject === filter)
+        .slice().sort((a, b) => a.date.localeCompare(b.date));
+
+      if (chartInst) chartInst.destroy();
+      if (!scores.length) return;
+
+      chartInst = new Chart(document.getElementById('scoreChart'), {
+        type: 'line',
+        data: {
+          labels: scores.map(s => formatDate(s.date) + ' ' + s.name),
+          datasets: [{
+            label: 'Score %',
+            data: scores.map(s => Math.round((s.score / s.maxScore) * 100)),
+            borderColor: subjectColors[filter] || '#6c8ef5',
+            backgroundColor: (subjectColors[filter] || '#6c8ef5') + '22',
+            fill: true,
+            tension: 0.3,
+            pointRadius: 5,
+          }],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { ticks: { color: '#8892aa', maxRotation: 30 }, grid: { color: '#2e3247' } },
+            y: { min: 0, max: 100, ticks: { color: '#8892aa', callback: v => v + '%' }, grid: { color: '#2e3247' } },
+          },
+        },
+      });
+    }
+
+    function renderTable() {
+      const filter = document.getElementById('filterSubject').value;
+      let scores = getTestScores().filter(s => !filter || s.subject === filter);
+      const tbody = document.getElementById('scoreBody');
+      if (!scores.length) {
+        tbody.innerHTML = '<tr><td colspan="7" class="empty">No scores yet.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = scores.map(s => {
+        const pct = Math.round((s.score / s.maxScore) * 100);
+        const cls = pct >= 70 ? 'high' : pct >= 50 ? 'mid' : 'low';
+        return `<tr>
+          <td style="white-space:nowrap">${formatDate(s.date)}</td>
+          <td>${s.name}</td>
+          <td><span class="badge badge-blue">${subjectLabels[s.subject] || s.subject}</span></td>
+          <td>${s.score}/${s.maxScore}</td>
+          <td><div class="score-pill ${cls}">${pct}%</div></td>
+          <td style="font-size:0.82rem;color:var(--text-muted)">${s.notes || '—'}</td>
+          <td><button class="btn btn-sm btn-danger" onclick="del('${s.id}')">✕</button></td>
+        </tr>`;
+      }).join('');
+    }
+
+    function del(id) {
+      if (confirm('Delete this score?')) { deleteTestScore(id); renderAll(); }
+    }
+
+    function renderAll() { renderStats(); renderChart(); renderTable(); }
+    renderAll();
+  </script>
+  <script>if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js');</script>
+</body>
+</html>

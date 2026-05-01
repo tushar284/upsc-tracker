@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="UPSC">
+  <meta name="theme-color" content="#0f1117">
+  <link rel="manifest" href="manifest.json">
+  <title>Course — Tushar Progress</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .pipeline-wrap { overflow-x: auto; padding-bottom: 0.5rem; }
+    .pipeline {
+      display: flex; align-items: center; gap: 0;
+      min-width: max-content; padding: 0.5rem 0;
+    }
+    .pipe-item {
+      font-size: 0.72rem; padding: 0.45rem 0.75rem;
+      border-radius: 4px; white-space: nowrap;
+      position: relative; margin-right: 18px;
+    }
+    .pipe-item::after {
+      content: '→'; position: absolute; right: -14px; top: 50%;
+      transform: translateY(-50%); color: var(--text-muted); font-size: 0.8rem;
+    }
+    .pipe-item:last-child::after { display: none; }
+    .pipe-done   { background: #183d30; color: var(--accent2); }
+    .pipe-active { background: #3d2e10; color: var(--accent3); font-weight: 700; border: 1px solid var(--accent3); }
+    .pipe-todo   { background: var(--surface2); color: var(--text-muted); }
+    .mod-row {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.7rem 0; border-bottom: 1px solid var(--border); flex-wrap: wrap;
+    }
+    .mod-row:last-child { border-bottom: none; }
+    .mod-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .dot-c { background: var(--accent2); }
+    .dot-o { background: var(--accent3); }
+    .dot-u { background: var(--border); }
+    .mod-info { flex: 1; min-width: 130px; }
+    .mod-title { font-size: 0.9rem; }
+    .mod-paper { font-size: 0.72rem; color: var(--text-muted); margin-top: 0.1rem; }
+    .mod-sel {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 6px; color: var(--text); padding: 0.3rem 0.5rem; font-size: 0.8rem;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <span class="nav-brand">📚 Tushar</span>
+    <a href="index.html">Dashboard</a>
+    <a href="course.html" class="active">Course</a>
+    <a href="topics.html">Topics</a>
+    <a href="subjects.html">Subjects</a>
+  </nav>
+
+  <main>
+    <h1>Next IAS — Course Progress</h1>
+
+    <div class="card" style="border-left:4px solid var(--accent)">
+      <h2>2-Year Foundation — Elevate Batch</h2>
+      <div style="display:flex;flex-direction:column;gap:0.4rem;font-size:0.85rem;color:var(--text-muted)">
+        <span>📅 Started: October 2025 &nbsp;·&nbsp; Target: UPSC 2027</span>
+        <span>📡 Class Days: Tue / Wed / Sat / Sun · 7:30–10:30 AM (live online)</span>
+        <span>📺 Weekly CA Class: Every Sunday 1:30–5:00 PM</span>
+      </div>
+    </div>
+
+    <div class="card-grid" id="courseStats"></div>
+
+    <!-- Pipeline -->
+    <div class="card">
+      <h2>Course Pipeline</h2>
+      <div class="pipeline-wrap">
+        <div id="pipeline"></div>
+      </div>
+    </div>
+
+    <!-- All modules -->
+    <div class="card">
+      <h2>All Modules</h2>
+      <div id="moduleList"></div>
+    </div>
+
+    <!-- Self-study phased plan -->
+    <div class="card" style="border-left:4px solid var(--accent2)">
+      <h2>Self-Study Plan</h2>
+      <p style="font-size:0.82rem;color:var(--text-muted);margin:0 0 1rem">Start light — upgrade your phase when the habit is locked in. Full-time job + gym = consistency beats intensity.</p>
+      <div style="display:flex;gap:0.4rem;margin-bottom:1rem;flex-wrap:wrap" id="phaseBar">
+        <button class="btn phase-btn" data-ph="1" onclick="setPhase('1')">Phase 1 · Light</button>
+        <button class="btn btn-outline phase-btn" data-ph="2" onclick="setPhase('2')">Phase 2 · Building</button>
+        <button class="btn btn-outline phase-btn" data-ph="3" onclick="setPhase('3')">Phase 3 · Full Pace</button>
+      </div>
+      <div id="phaseContent"></div>
+    </div>
+  </main>
+
+  <script src="js/storage.js"></script>
+  <script src="data/syllabus.js"></script>
+  <script>
+    function init() {
+      const modules = SYLLABUS.nextias_modules;
+      const overrides = getModuleStatuses();
+      const eff = modules.map(m => ({ ...m, status: overrides[m.id] || m.status }));
+
+      renderStats(eff);
+      renderPipeline(eff);
+      renderModules(eff);
+      initPhase();
+    }
+
+    function renderStats(modules) {
+      const c = modules.filter(m => m.status === 'completed').length;
+      const o = modules.filter(m => m.status === 'ongoing').length;
+      const u = modules.filter(m => m.status === 'upcoming').length;
+      const pct = Math.round((c / modules.length) * 100);
+      document.getElementById('courseStats').innerHTML = `
+        <div class="stat-card"><div class="value" style="color:var(--accent2)">${c}</div><div class="label">Completed</div></div>
+        <div class="stat-card"><div class="value" style="color:var(--accent3)">${o}</div><div class="label">In Progress</div></div>
+        <div class="stat-card"><div class="value">${u}</div><div class="label">Upcoming</div></div>
+        <div class="stat-card"><div class="value">${pct}%</div><div class="label">Course Done</div></div>`;
+    }
+
+    function renderPipeline(modules) {
+      const y1 = modules.filter(m => m.year === 1);
+      const y2 = modules.filter(m => m.year === 2);
+      function pipeItems(group) {
+        return group.map(m => {
+          const cls = m.status === 'completed' ? 'pipe-done' : m.status === 'ongoing' ? 'pipe-active' : 'pipe-todo';
+          const icon = m.status === 'completed' ? '✓ ' : m.status === 'ongoing' ? '▶ ' : '';
+          return `<div class="pipe-item ${cls}">${icon}${m.title}</div>`;
+        }).join('');
+      }
+      document.getElementById('pipeline').innerHTML = `
+        <div style="font-size:0.7rem;color:var(--accent);margin-bottom:0.3rem;font-weight:600;letter-spacing:0.05em">YEAR 1 — FOUNDATION</div>
+        <div class="pipeline" style="margin-bottom:0.9rem">${pipeItems(y1)}</div>
+        <div style="font-size:0.7rem;color:var(--accent2);margin-bottom:0.3rem;font-weight:600;letter-spacing:0.05em">YEAR 2 — ADVANCED</div>
+        <div class="pipeline">${pipeItems(y2)}</div>`;
+    }
+
+    function renderModules(modules) {
+      const dotCls = { completed: 'dot-c', ongoing: 'dot-o', upcoming: 'dot-u' };
+      const y1 = modules.filter(m => m.year === 1);
+      const y2 = modules.filter(m => m.year === 2);
+      function modRows(group) {
+        return group.map(m => `
+          <div class="mod-row">
+            <div class="mod-dot ${dotCls[m.status]}"></div>
+            <div class="mod-info">
+              <div class="mod-title">${m.title}</div>
+              <div class="mod-paper">${m.gs_paper}</div>
+            </div>
+            <select class="mod-sel" onchange="updateMod('${m.id}',this.value)">
+              <option value="completed" ${m.status==='completed'?'selected':''}>✓ Completed</option>
+              <option value="ongoing"   ${m.status==='ongoing'  ?'selected':''}>▶ In Progress</option>
+              <option value="upcoming"  ${m.status==='upcoming' ?'selected':''}>⏳ Upcoming</option>
+            </select>
+          </div>`).join('');
+      }
+      document.getElementById('moduleList').innerHTML =
+        `<div style="font-size:0.75rem;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.06em;padding:0.3rem 0 0.5rem">Year 1 — Foundation · Oct 2025–Sep 2026</div>` +
+        modRows(y1) +
+        `<div style="font-size:0.75rem;font-weight:700;color:var(--accent2);text-transform:uppercase;letter-spacing:0.06em;padding:0.9rem 0 0.5rem;border-top:1px solid var(--border);margin-top:0.5rem">Year 2 — Advanced · Oct 2026–Sep 2027</div>` +
+        modRows(y2);
+    }
+
+    function updateMod(id, status) {
+      saveModuleStatus(id, status);
+      init();
+    }
+
+    // ── Phased self-study plan ─────────────────────────────────────────────
+    const PHASES = {
+      '1': {
+        label: 'Phase 1 — Light Mode',
+        sublabel: 'Months 1–3 · Build the habit, no burnout',
+        color: 'var(--accent)',
+        items: [
+          { id: 'a', text: 'Answer writing — 1 per week, any topic from class (Sunday)', freq: '30–45 min/week' },
+          { id: 'b', text: 'CA scan — PIB + The Hindu front page before bed', freq: '10 min/day' },
+          { id: 'c', text: 'Revise class notes — within 48 hrs of each class', freq: '20–30 min' },
+          { id: 'd', text: 'Anthropology P1 Units 1–2 — Mon &amp; Thu evening', freq: '20 min, 2×/week' }
+        ],
+        note: '💡 CSAT is your strength — skip daily drilling. Attend class + attempt 1 PYQ paper per month to stay sharp.'
+      },
+      '2': {
+        label: 'Phase 2 — Building',
+        sublabel: 'Months 4–6 · More answers + CA depth',
+        color: 'var(--accent3)',
+        items: [
+          { id: 'a', text: 'Answer writing — 2–3 per week (1 GS + 1 Anthro)', freq: '45 min each' },
+          { id: 'b', text: 'CA with 3-bullet notes — daily', freq: '20 min/day' },
+          { id: 'c', text: 'NCERT History — 1 chapter, 3× per week', freq: '20 min, 3×/week' },
+          { id: 'd', text: 'Anthropology P1 Units 3–6 — 3× per week', freq: '25 min, 3×/week' },
+          { id: 'e', text: 'CSAT — 1 PYQ paper per month (maintenance only)', freq: '1.5 hr/month' }
+        ],
+        note: ''
+      },
+      '3': {
+        label: 'Phase 3 — Full Pace',
+        sublabel: 'Month 7+ · Exam-pace answer writing',
+        color: 'var(--accent2)',
+        items: [
+          { id: 'a', text: 'Answer writing — 4–5 per week (timed, 7.5 min/150 words)', freq: '45 min each' },
+          { id: 'b', text: 'CA full read + notes — daily', freq: '30 min/day' },
+          { id: 'c', text: 'Monthly Prelims mock test (PYQ set)', freq: '2 hr/month' },
+          { id: 'd', text: 'Anthropology systematic coverage — 1 unit/week + model answers', freq: 'varies' },
+          { id: 'e', text: 'CSAT — 1 full paper every 6 weeks (just to stay calibrated)', freq: '2 hr/6 weeks' }
+        ],
+        note: ''
+      }
+    };
+
+    function setPhase(n) {
+      localStorage.setItem('study_phase', n);
+      document.querySelectorAll('.phase-btn').forEach(b => {
+        const active = b.dataset.ph === n;
+        b.classList.toggle('active', active);
+        b.classList.toggle('btn-outline', !active);
+      });
+      renderPhaseContent(n);
+    }
+
+    function renderPhaseContent(n) {
+      const ph = PHASES[n];
+      const items = ph.items.map(item => `
+        <div style="display:flex;justify-content:space-between;align-items:baseline;padding:0.45rem 0;border-bottom:1px solid var(--border);font-size:0.88rem;gap:0.5rem">
+          <span>${item.text}</span>
+          <span style="font-size:0.75rem;color:var(--text-muted);white-space:nowrap;flex-shrink:0">${item.freq}</span>
+        </div>`).join('');
+      document.getElementById('phaseContent').innerHTML = `
+        <div style="font-weight:600;color:${ph.color};margin-bottom:0.15rem">${ph.label}</div>
+        <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:0.75rem">${ph.sublabel}</div>
+        ${items}
+        ${ph.note ? `<div style="font-size:0.8rem;color:var(--text-muted);margin-top:0.7rem;padding:0.5rem 0.75rem;background:var(--surface2);border-radius:6px">${ph.note}</div>` : ''}`;
+    }
+
+    function initPhase() {
+      const n = localStorage.getItem('study_phase') || '1';
+      document.querySelectorAll('.phase-btn').forEach(b => {
+        const active = b.dataset.ph === n;
+        b.classList.toggle('active', active);
+        b.classList.toggle('btn-outline', !active);
+      });
+      renderPhaseContent(n);
+    }
+
+    init();
+  </script>
+  <script>if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js');</script>
+</body>
+</html>

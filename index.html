@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="UPSC">
+  <meta name="theme-color" content="#0f1117">
+  <link rel="manifest" href="manifest.json">
+  <title>Tushar — UPSC Tracker</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .habit-card {
+      display: flex; align-items: center; gap: 1rem;
+      padding: 0.9rem 1rem; border-radius: 8px;
+      background: var(--surface2); margin-bottom: 0.6rem;
+      cursor: pointer; transition: background 0.15s;
+      border: 1px solid transparent;
+    }
+    .habit-card:hover { background: var(--border); }
+    .habit-card.done { background: #152b22; border-color: #2d6b50; }
+    .habit-card.done .habit-label { text-decoration: line-through; color: var(--text-muted); }
+    .habit-check {
+      width: 22px; height: 22px; flex-shrink: 0;
+      accent-color: var(--accent2); cursor: pointer;
+    }
+    .habit-label { font-size: 0.92rem; flex: 1; }
+    .habit-icon { font-size: 1.1rem; flex-shrink: 0; }
+    .day-info { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; margin-bottom: 1.25rem; }
+    .day-badge { font-size: 0.75rem; padding: 0.2rem 0.7rem; border-radius: 99px; }
+    .badge-class { background: #183d30; color: var(--accent2); }
+    .badge-office { background: #1d2550; color: #7b9ef5; }
+    .badge-ca { background: #3d1f4a; color: #c77dff; }
+    .week-habits { display: grid; grid-template-columns: repeat(7,1fr); gap: 4px; margin-top: 0.75rem; }
+    .wh-col { text-align: center; }
+    .wh-day { font-size: 0.65rem; color: var(--text-muted); margin-bottom: 3px; text-transform: uppercase; }
+    .wh-dot {
+      height: 28px; border-radius: 5px; background: var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.65rem; color: var(--text-muted);
+    }
+    .wh-dot.full { background: var(--accent2); color: #111; }
+    .wh-dot.partial { background: #3d2e10; color: var(--accent3); }
+    .wh-dot.today-col { outline: 2px solid var(--accent); }
+    .quick-links { display: grid; grid-template-columns: repeat(3,1fr); gap: 0.75rem; margin-top: 0.75rem; }
+    .ql-card {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 8px; padding: 0.9rem; text-align: center;
+      text-decoration: none; color: var(--text); transition: border-color 0.15s;
+    }
+    .ql-card:hover { border-color: var(--accent); }
+    .ql-card .ql-icon { font-size: 1.4rem; display: block; margin-bottom: 0.3rem; }
+    .ql-card .ql-label { font-size: 0.8rem; color: var(--text-muted); }
+    .ql-card .ql-val { font-size: 1.1rem; font-weight: 700; color: var(--accent); }
+    @media(max-width:480px){ .quick-links { grid-template-columns: 1fr 1fr; } }
+  </style>
+</head>
+<body>
+  <nav>
+    <span class="nav-brand">📚 Tushar</span>
+    <a href="index.html" class="active">Dashboard</a>
+    <a href="course.html">Course</a>
+    <a href="topics.html">Topics</a>
+    <a href="subjects.html">Subjects</a>
+  </nav>
+
+  <main>
+    <!-- Day header -->
+    <div class="day-info">
+      <h1 id="dayHeading" style="margin:0;font-size:1.4rem"></h1>
+      <span id="dateLabel" style="color:var(--text-muted);font-size:0.9rem"></span>
+      <span id="badge1" class="day-badge" style="display:none"></span>
+      <span id="badge2" class="day-badge" style="display:none"></span>
+    </div>
+
+    <!-- Daily habit checkboxes -->
+    <div class="card">
+      <h2 style="margin-bottom:0.75rem">Today's Habits</h2>
+      <div id="habitsList">
+        <div class="habit-card" id="hc_answer" onclick="toggle('answer_written','hc_answer')">
+          <span class="habit-icon">✍️</span>
+          <span class="habit-label">Wrote at least 1 answer / solved 1 CSAT question</span>
+          <input type="checkbox" class="habit-check" id="h_answer" onclick="event.stopPropagation();toggle('answer_written','hc_answer')">
+        </div>
+        <div class="habit-card" id="hc_ca" onclick="toggle('ca_read','hc_ca')">
+          <span class="habit-icon">📰</span>
+          <span class="habit-label">Read current affairs (The Hindu / Vision IAS / PIB)</span>
+          <input type="checkbox" class="habit-check" id="h_ca" onclick="event.stopPropagation();toggle('ca_read','hc_ca')">
+        </div>
+        <div class="habit-card" id="hc_revision" onclick="toggle('class_revised','hc_revision')">
+          <span class="habit-icon">🔁</span>
+          <span class="habit-label">Revised yesterday's class notes</span>
+          <input type="checkbox" class="habit-check" id="h_revision" onclick="event.stopPropagation();toggle('class_revised','hc_revision')">
+        </div>
+        <div class="habit-card" id="hc_notes" onclick="toggle('notes_updated','hc_notes')">
+          <span class="habit-icon">📓</span>
+          <span class="habit-label">Made / updated notes for today's study session</span>
+          <input type="checkbox" class="habit-check" id="h_notes" onclick="event.stopPropagation();toggle('notes_updated','hc_notes')">
+        </div>
+      </div>
+      <div id="habitMsg" style="margin-top:0.75rem;font-size:0.85rem;min-height:1.2em;color:var(--accent2)"></div>
+    </div>
+
+    <!-- Weekly habit grid -->
+    <div class="card">
+      <h2>Habit Streak — Last 7 Days</h2>
+      <div class="week-habits" id="weekHabits"></div>
+      <p style="font-size:0.75rem;color:var(--text-muted);margin-top:0.6rem">
+        <span style="display:inline-block;width:12px;height:12px;background:var(--accent2);border-radius:3px;vertical-align:middle"></span> All 4 done &nbsp;
+        <span style="display:inline-block;width:12px;height:12px;background:#3d2e10;border-radius:3px;vertical-align:middle"></span> Partial &nbsp;
+        <span style="display:inline-block;width:12px;height:12px;background:var(--border);border-radius:3px;vertical-align:middle"></span> None
+      </p>
+    </div>
+
+    <!-- Today's schedule -->
+    <div class="card" id="scheduleCard">
+      <h2>Today's Timetable</h2>
+      <div id="scheduleSlots"></div>
+    </div>
+
+    <!-- Quick stats -->
+    <div class="quick-links" id="quickLinks"></div>
+  </main>
+
+  <script src="js/storage.js"></script>
+  <script src="data/syllabus.js"></script>
+  <script>
+    const today = todayISO();
+    const dayName = getDayName(today);
+
+    // ── Day header ─────────────────────────────────────────────────────────
+    document.getElementById('dayHeading').textContent = dayName;
+    document.getElementById('dateLabel').textContent = formatDate(today);
+
+    const badges = [];
+    if (isClassDay(today)) badges.push({ label: '📡 Class Day', cls: 'badge-class' });
+    if (isOfficeDay(today)) badges.push({ label: '🏢 Office', cls: 'badge-office' });
+    if (dayName === 'Sunday') badges.push({ label: '📺 CA Class 1:30 PM', cls: 'badge-ca' });
+    if (badges[0]) { const b = document.getElementById('badge1'); b.textContent = badges[0].label; b.className = 'day-badge ' + badges[0].cls; b.style.display = ''; }
+    if (badges[1]) { const b = document.getElementById('badge2'); b.textContent = badges[1].label; b.className = 'day-badge ' + badges[1].cls; b.style.display = ''; }
+
+    // ── Habits ─────────────────────────────────────────────────────────────
+    const habitKeyMap = { answer_written: 'h_answer', ca_read: 'h_ca', class_revised: 'h_revision', notes_updated: 'h_notes' };
+    const habitCardMap = { answer_written: 'hc_answer', ca_read: 'hc_ca', class_revised: 'hc_revision', notes_updated: 'hc_notes' };
+
+    function loadHabits() {
+      const h = getHabitsForDate(today);
+      Object.entries(habitKeyMap).forEach(([key, elId]) => {
+        const chk = document.getElementById(elId);
+        const card = document.getElementById(habitCardMap[key]);
+        if (chk) chk.checked = !!h[key];
+        if (card) card.classList.toggle('done', !!h[key]);
+      });
+      updateMsg();
+    }
+
+    function toggle(key, cardId) {
+      const chkId = habitKeyMap[key];
+      const chk = document.getElementById(chkId);
+      const card = document.getElementById(cardId);
+      const h = getHabitsForDate(today);
+      const newVal = !h[key];
+      h[key] = newVal;
+      saveHabitsForDate(today, h);
+      if (chk) chk.checked = newVal;
+      if (card) card.classList.toggle('done', newVal);
+      updateMsg();
+      renderWeekHabits();
+    }
+
+    const habitMessages = ['', '🌱 Started!', '💪 Two done!', '🔥 Almost there!', '🏆 Perfect day!'];
+    function updateMsg() {
+      const h = getHabitsForDate(today);
+      const n = Object.keys(habitKeyMap).filter(k => h[k]).length;
+      document.getElementById('habitMsg').textContent = n > 0 ? habitMessages[n] : '';
+    }
+
+    // ── Week habits grid ───────────────────────────────────────────────────
+    const dayAbbr = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    function renderWeekHabits() {
+      const days = last7Days();
+      const habits = getDailyHabits();
+      document.getElementById('weekHabits').innerHTML = days.map(d => {
+        const h = habits.find(x => x.date === d) || {};
+        const n = ['answer_written','ca_read','class_revised','notes_updated'].filter(k => h[k]).length;
+        const cls = n === 4 ? 'full' : n > 0 ? 'partial' : '';
+        const isToday = d === today;
+        const dn = dayAbbr[new Date(d + 'T00:00:00').getDay()];
+        return `<div class="wh-col">
+          <div class="wh-day">${dn}</div>
+          <div class="wh-dot ${cls} ${isToday ? 'today-col' : ''}">${n > 0 ? n + '/4' : ''}</div>
+        </div>`;
+      }).join('');
+    }
+
+    // ── Schedule ───────────────────────────────────────────────────────────
+    const schedules = {
+      Monday:    [['6:30–7:20 AM','✍️ Answer writing — 1 UPSC question'],['10:30 AM–6 PM','🏢 Office'],['6:00–7:30 PM','📖 Revision: last class topic OR Anthropology'],['9:00–10:30 PM','📰 Current Affairs (The Hindu + PIB notes)']],
+      Tuesday:   [['6:30–7:20 AM','🔁 Revise yesterday\'s notes / flashcards'],['7:30–10:30 AM','📡 Next IAS Live Class'],['10:30 AM–6 PM','🏢 Office'],['6:00–7:30 PM','📝 Today\'s class notes — revise within 6 hrs'],['9:00–10:30 PM','📰 CA + Anthropology reading']],
+      Wednesday: [['6:30–7:20 AM','✍️ Answer writing — 1 question from class topic'],['7:30–10:30 AM','📡 Next IAS Live Class'],['10:30 AM–6 PM','🏢 Office'],['6:00–7:30 PM','✍️ Answer writing + class notes revision'],['9:00–10:30 PM','📰 CA + Anthropology']],
+      Thursday:  [['6:30–7:20 AM','✍️ Answer writing — Anthropology (Paper I theory)'],['10:30 AM–6 PM','🏢 Office'],['6:00–7:30 PM','📖 Anthropology deep study (Theories / Kinship)'],['9:00–10:30 PM','📰 CA: compile weekly notes']],
+      Friday:    [['6:30–7:20 AM','🔁 Weekly revision consolidation — skim Mon–Thu notes'],['10:30 AM–6 PM','🏢 Office'],['6:00–8:00 PM','📖 Anthropology extended session (Paper II)'],['9:00–10:00 PM','📰 CA wrap-up; prep Sunday CA class material 🌙']],
+      Saturday:  [['6:30–7:15 AM','🔁 Light warm-up — revise last 2 classes'],['7:30–10:30 AM','📡 Next IAS Live Class'],['11 AM–1:30 PM','📝 Consolidate notes + 2 answer writings'],['2:00–5:00 PM','📖 Anthropology deep dive — 1 full unit'],['7:00–9:00 PM','📝 Weekly self-test — 10 Prelims MCQs']],
+      Sunday:    [['7:30–10:30 AM','📡 Next IAS Live Class'],['11 AM–1 PM','🍽️ Rest / light revision'],['1:30–5:00 PM','📡 Next IAS Weekly CA Class (Live)'],['6:00–7:30 PM','📰 Compile CA notes'],['7:30–8:30 PM','🗓️ Plan next week — topics, Anthro units, answer themes']]
+    };
+
+    function renderSchedule() {
+      const slots = schedules[dayName] || [];
+      document.getElementById('scheduleSlots').innerHTML = slots.map(([time, task]) =>
+        `<div style="display:flex;gap:0.75rem;margin-bottom:0.55rem;font-size:0.88rem">
+          <span style="color:var(--accent);min-width:120px;flex-shrink:0;font-size:0.78rem;padding-top:1px">${time}</span>
+          <span>${task}</span>
+        </div>`
+      ).join('');
+    }
+
+    // ── Quick stats ────────────────────────────────────────────────────────
+    function renderQuickStats() {
+      const streak = computeStreak();
+      const done = getTopicsDone().size;
+      let total = 0;
+      const S = window.SYLLABUS;
+      [S.prelims, S.csat, S.gs1, S.gs2, S.gs3, S.gs4].forEach(s => s.units.forEach(u => total += u.topics.length));
+      S.anthropology.paper1.units.forEach(u => total += u.topics.length);
+      S.anthropology.paper2.units.forEach(u => total += u.topics.length);
+      const pct = total ? Math.round((done / total) * 100) : 0;
+      const modules = S.nextias_modules;
+      const overrides = getModuleStatuses();
+      const completed = modules.filter(m => (overrides[m.id] || m.status) === 'completed').length;
+
+      document.getElementById('quickLinks').innerHTML = `
+        <a href="course.html" class="ql-card">
+          <span class="ql-icon">🎓</span>
+          <div class="ql-val">${completed}/${modules.length}</div>
+          <div class="ql-label">Course modules</div>
+        </a>
+        <a href="topics.html" class="ql-card">
+          <span class="ql-icon">📋</span>
+          <div class="ql-val">${pct}%</div>
+          <div class="ql-label">Syllabus done</div>
+        </a>
+        <a href="subjects.html" class="ql-card">
+          <span class="ql-icon">🔥</span>
+          <div class="ql-val">${streak}</div>
+          <div class="ql-label">Day streak</div>
+        </a>`;
+    }
+
+    loadHabits();
+    renderWeekHabits();
+    renderSchedule();
+    renderQuickStats();
+  </script>
+  <script>if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js');</script>
+</body>
+</html>

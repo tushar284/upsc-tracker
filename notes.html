@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="UPSC">
+  <meta name="theme-color" content="#0f1117">
+  <link rel="manifest" href="manifest.json">
+  <title>Class Notes — Tushar Progress</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav>
+    <span class="nav-brand">📚 Tushar</span>
+    <a href="index.html">Dashboard</a>
+    <a href="schedule.html">Schedule</a>
+    <a href="course.html">Course</a>
+    <a href="topics.html">Topics</a>
+    <a href="answers.html">Answers</a>
+    <a href="current-affairs.html">Curr. Affairs</a>
+    <a href="scores.html">Scores</a>
+    <a href="notes.html" class="active">Notes</a>
+  </nav>
+
+  <main>
+    <h1>Class Notes Tracker</h1>
+
+    <div class="card-grid" id="noteStats"></div>
+
+    <div class="card">
+      <h2>Add Class Note</h2>
+      <div class="form-row">
+        <div>
+          <label>Date</label>
+          <input type="date" id="nDate">
+        </div>
+        <div>
+          <label>Subject</label>
+          <select id="nSubject">
+            <option value="Anthropology">Anthropology</option>
+            <option value="ML">ML</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div>
+          <label>Revision Status</label>
+          <select id="nStatus">
+            <option value="pending">Pending</option>
+            <option value="revised">Revised</option>
+            <option value="done">Done ✓</option>
+          </select>
+        </div>
+      </div>
+      <div style="margin-bottom:0.75rem">
+        <label>Topics Covered in Class</label>
+        <textarea id="nTopics" rows="2" placeholder="e.g. Kinship terminologies, Totemism, Lévi-Strauss structuralism"></textarea>
+      </div>
+      <button class="btn" onclick="addNote()">Add Entry</button>
+    </div>
+
+    <div class="card">
+      <h2>All Notes</h2>
+      <div class="filter-bar">
+        <select id="filterStatus" onchange="renderNotes()">
+          <option value="">All statuses</option>
+          <option value="pending">Pending Revision</option>
+          <option value="revised">Revised</option>
+          <option value="done">Done</option>
+        </select>
+        <select id="filterSubj" onchange="renderNotes()">
+          <option value="">All subjects</option>
+          <option value="Anthropology">Anthropology</option>
+          <option value="ML">ML</option>
+        </select>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Date</th><th>Subject</th><th>Topics Covered</th><th>Status</th><th></th></tr>
+          </thead>
+          <tbody id="notesBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/storage.js"></script>
+  <script>
+    document.getElementById('nDate').value = todayISO();
+
+    const statusColors = { pending: 'badge-orange', revised: 'badge-blue', done: 'badge-green' };
+    const statusLabels = { pending: '⏳ Pending', revised: '📖 Revised', done: '✓ Done' };
+
+    function addNote() {
+      const topics = document.getElementById('nTopics').value.trim();
+      if (!topics) { alert('Enter topics covered.'); return; }
+      addClassNote({
+        date: document.getElementById('nDate').value || todayISO(),
+        subject: document.getElementById('nSubject').value,
+        topics,
+        status: document.getElementById('nStatus').value,
+      });
+      document.getElementById('nTopics').value = '';
+      document.getElementById('nStatus').value = 'pending';
+      renderAll();
+    }
+
+    function renderStats() {
+      const notes = getClassNotes();
+      const pending = notes.filter(n => n.status === 'pending').length;
+      const done = notes.filter(n => n.status === 'done').length;
+      document.getElementById('noteStats').innerHTML = `
+        <div class="stat-card"><div class="value">${notes.length}</div><div class="label">Total Classes</div></div>
+        <div class="stat-card"><div class="value" style="color:var(--accent3)">${pending}</div><div class="label">Pending Revision</div></div>
+        <div class="stat-card"><div class="value" style="color:var(--accent2)">${done}</div><div class="label">Fully Done</div></div>`;
+    }
+
+    function renderNotes() {
+      const statusFilter = document.getElementById('filterStatus').value;
+      const subjFilter = document.getElementById('filterSubj').value;
+      let notes = getClassNotes();
+      if (statusFilter) notes = notes.filter(n => n.status === statusFilter);
+      if (subjFilter) notes = notes.filter(n => n.subject === subjFilter);
+
+      const tbody = document.getElementById('notesBody');
+      if (!notes.length) {
+        tbody.innerHTML = '<tr><td colspan="5" class="empty">No notes logged yet.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = notes.map(n => `
+        <tr>
+          <td style="white-space:nowrap">${formatDate(n.date)}</td>
+          <td><span class="badge badge-blue">${n.subject}</span></td>
+          <td style="font-size:0.85rem">${n.topics}</td>
+          <td>
+            <select class="status-sel" onchange="changeStatus('${n.id}', this.value)"
+              style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:0.3rem;font-size:0.8rem">
+              <option value="pending" ${n.status === 'pending' ? 'selected' : ''}>⏳ Pending</option>
+              <option value="revised" ${n.status === 'revised' ? 'selected' : ''}>📖 Revised</option>
+              <option value="done" ${n.status === 'done' ? 'selected' : ''}>✓ Done</option>
+            </select>
+          </td>
+          <td><button class="btn btn-sm btn-danger" onclick="del('${n.id}')">✕</button></td>
+        </tr>`).join('');
+    }
+
+    function changeStatus(id, status) {
+      updateNoteStatus(id, status);
+      renderAll();
+    }
+
+    function del(id) {
+      if (confirm('Delete this note entry?')) { deleteClassNote(id); renderAll(); }
+    }
+
+    function renderAll() { renderStats(); renderNotes(); }
+    renderAll();
+  </script>
+  <script>if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js');</script>
+</body>
+</html>

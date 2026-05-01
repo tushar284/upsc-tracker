@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="UPSC">
+  <meta name="theme-color" content="#0f1117">
+  <link rel="manifest" href="manifest.json">
+  <title>Current Affairs — Tushar Progress</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav>
+    <span class="nav-brand">📚 Tushar</span>
+    <a href="index.html">Dashboard</a>
+    <a href="schedule.html">Schedule</a>
+    <a href="course.html">Course</a>
+    <a href="topics.html">Topics</a>
+    <a href="answers.html">Answers</a>
+    <a href="current-affairs.html" class="active">Curr. Affairs</a>
+    <a href="scores.html">Scores</a>
+    <a href="notes.html">Notes</a>
+  </nav>
+
+  <main>
+    <h1>Current Affairs</h1>
+
+    <div class="card">
+      <h2>Log a Week</h2>
+      <div class="form-row">
+        <div>
+          <label>Week starting (Monday)</label>
+          <input type="date" id="caWeekStart">
+        </div>
+        <div>
+          <label>Sources covered</label>
+          <input type="text" id="caSources" placeholder="The Hindu, Vision IAS, PIB...">
+        </div>
+      </div>
+      <div style="margin-bottom:0.75rem">
+        <label>Key topics / themes</label>
+        <textarea id="caTopics" rows="3" placeholder="Polity: ECI, Environment: COP30, Economy: RBI policy..."></textarea>
+      </div>
+      <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem">
+        <label style="display:flex;align-items:center;gap:0.5rem;margin:0;cursor:pointer">
+          <input type="checkbox" id="caDone" style="width:16px;height:16px;accent-color:var(--accent2)">
+          Mark as completed
+        </label>
+      </div>
+      <button class="btn" onclick="addCA()">Save Week</button>
+    </div>
+
+    <div class="card">
+      <h2>History</h2>
+      <div class="filter-bar">
+        <select id="filterDone" onchange="renderCA()">
+          <option value="">All weeks</option>
+          <option value="done">Completed</option>
+          <option value="pending">Pending</option>
+        </select>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Week</th><th>Sources</th><th>Topics</th><th>Status</th><th></th></tr>
+          </thead>
+          <tbody id="caBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/storage.js"></script>
+  <script>
+    // Default to Monday of current week
+    function getMondayISO() {
+      const d = new Date();
+      const day = d.getDay();
+      const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+      return new Date(d.setDate(diff)).toISOString().slice(0, 10);
+    }
+    document.getElementById('caWeekStart').value = getMondayISO();
+
+    function addCA() {
+      const ws = document.getElementById('caWeekStart').value;
+      if (!ws) { alert('Please select a week start date.'); return; }
+      const entry = {
+        id: ws,
+        weekStart: ws,
+        sources: document.getElementById('caSources').value.trim(),
+        topics: document.getElementById('caTopics').value.trim(),
+        done: document.getElementById('caDone').checked,
+      };
+      saveCAWeek(entry);
+      document.getElementById('caSources').value = '';
+      document.getElementById('caTopics').value = '';
+      document.getElementById('caDone').checked = false;
+      renderCA();
+    }
+
+    function renderCA() {
+      const filter = document.getElementById('filterDone').value;
+      let weeks = getCAWeeks().slice().sort((a, b) => b.weekStart.localeCompare(a.weekStart));
+      if (filter === 'done') weeks = weeks.filter(w => w.done);
+      if (filter === 'pending') weeks = weeks.filter(w => !w.done);
+
+      const tbody = document.getElementById('caBody');
+      if (!weeks.length) {
+        tbody.innerHTML = '<tr><td colspan="5" class="empty">No weeks logged yet.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = weeks.map(w => `
+        <tr>
+          <td style="white-space:nowrap">${formatDate(w.weekStart)}</td>
+          <td style="font-size:0.82rem;color:var(--text-muted)">${w.sources || '—'}</td>
+          <td style="max-width:240px;font-size:0.82rem;color:var(--text-muted)">${w.topics || '—'}</td>
+          <td>
+            <span class="badge ${w.done ? 'badge-green' : 'badge-orange'}"
+              style="cursor:pointer" onclick="toggleDone('${w.id}')">
+              ${w.done ? '✓ Done' : '⏳ Pending'}
+            </span>
+          </td>
+          <td><button class="btn btn-sm btn-danger" onclick="delCA('${w.id}')">✕</button></td>
+        </tr>`).join('');
+    }
+
+    function toggleDone(id) {
+      const weeks = getCAWeeks();
+      const w = weeks.find(x => x.id === id);
+      if (w) { w.done = !w.done; saveCAWeek(w); renderCA(); }
+    }
+
+    function delCA(id) {
+      if (confirm('Delete this week?')) { deleteCAWeek(id); renderCA(); }
+    }
+
+    renderCA();
+  </script>
+  <script>if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js');</script>
+</body>
+</html>

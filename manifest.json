@@ -1,0 +1,11 @@
+{
+  "name": "Tushar — UPSC Tracker",
+  "short_name": "UPSC",
+  "description": "Personal UPSC study progress tracker",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f1117",
+  "theme_color": "#0f1117"
+}

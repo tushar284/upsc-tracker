@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="UPSC">
+  <meta name="theme-color" content="#0f1117">
+  <link rel="manifest" href="manifest.json">
+  <title>Topics — Tushar Progress</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav>
+    <span class="nav-brand">📚 Tushar</span>
+    <a href="index.html">Dashboard</a>
+    <a href="course.html">Course</a>
+    <a href="topics.html" class="active">Topics</a>
+    <a href="subjects.html">Subjects</a>
+  </nav>
+
+  <main>
+    <h1>Syllabus Checklist</h1>
+
+    <div style="display:flex;gap:0.4rem;margin-bottom:1.25rem;flex-wrap:wrap;" id="tabBar">
+      <button class="btn tab-btn active" data-tab="prelims">Prelims GS</button>
+      <button class="btn btn-outline tab-btn" data-tab="csat">CSAT</button>
+      <button class="btn btn-outline tab-btn" data-tab="gs1">GS I</button>
+      <button class="btn btn-outline tab-btn" data-tab="gs2">GS II</button>
+      <button class="btn btn-outline tab-btn" data-tab="gs3">GS III</button>
+      <button class="btn btn-outline tab-btn" data-tab="gs4">GS IV</button>
+      <button class="btn btn-outline tab-btn" data-tab="anthro1">Anthro P1</button>
+      <button class="btn btn-outline tab-btn" data-tab="anthro2">Anthro P2</button>
+      <button class="btn btn-outline tab-btn" data-tab="books">Books</button>
+    </div>
+
+    <div class="card">
+      <h2>Overall Progress</h2>
+      <div id="overallProgress"></div>
+    </div>
+
+    <div id="tab-prelims"></div>
+    <div id="tab-csat"   style="display:none"></div>
+    <div id="tab-gs1"    style="display:none"></div>
+    <div id="tab-gs2"    style="display:none"></div>
+    <div id="tab-gs3"    style="display:none"></div>
+    <div id="tab-gs4"    style="display:none"></div>
+    <div id="tab-anthro1" style="display:none"></div>
+    <div id="tab-anthro2" style="display:none"></div>
+    <div id="tab-books"  style="display:none"></div>
+  </main>
+
+  <script src="js/storage.js"></script>
+  <script src="data/syllabus.js"></script>
+  <script>
+    // Tab switching
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('active'); b.classList.add('btn-outline'); });
+        btn.classList.add('active'); btn.classList.remove('btn-outline');
+        document.querySelectorAll('[id^="tab-"]').forEach(p => p.style.display = 'none');
+        document.getElementById('tab-' + btn.dataset.tab).style.display = '';
+      });
+    });
+
+    const S = window.SYLLABUS;
+
+    function countTopics(units) { return units.reduce((n, u) => n + u.topics.length, 0); }
+    function countDone(units, done) { return units.reduce((n, u) => n + u.topics.filter(t => done.has(t.id)).length, 0); }
+
+    function renderOverall() {
+      const done = getTopicsDone();
+      const sections = [
+        { label: 'Prelims GS', units: S.prelims.units },
+        { label: 'CSAT', units: S.csat.units },
+        { label: 'GS I', units: S.gs1.units },
+        { label: 'GS II', units: S.gs2.units },
+        { label: 'GS III', units: S.gs3.units },
+        { label: 'GS IV', units: S.gs4.units },
+        { label: 'Anthropology P1', units: S.anthropology.paper1.units, color: 'var(--accent2)' },
+        { label: 'Anthropology P2', units: S.anthropology.paper2.units, color: 'var(--accent2)' },
+      ];
+      document.getElementById('overallProgress').innerHTML = sections.map(s => {
+        const total = countTopics(s.units);
+        const n = countDone(s.units, done);
+        const pct = total ? Math.round((n / total) * 100) : 0;
+        const color = s.color || 'var(--accent)';
+        return `<div style="margin-bottom:0.8rem">
+          <div style="display:flex;justify-content:space-between;font-size:0.85rem;margin-bottom:0.3rem">
+            <span>${s.label}</span><span style="color:var(--text-muted)">${n}/${total}</span>
+          </div>
+          <div class="progress-bar"><div class="progress-bar-fill" style="width:${pct}%;background:${color}"></div></div>
+        </div>`;
+      }).join('');
+    }
+
+    function renderUnits(units, containerId, title, color) {
+      const done = getTopicsDone();
+      const html = units.map(u => {
+        const doneN = u.topics.filter(t => done.has(t.id)).length;
+        const pct = Math.round((doneN / u.topics.length) * 100);
+        return `<div class="card" style="margin-bottom:0.75rem">
+          <div class="unit-header" onclick="toggleUnit('${u.id}')">
+            <span>${u.title}</span>
+            <span style="font-size:0.78rem;color:var(--text-muted)">${doneN}/${u.topics.length} · ${pct}%</span>
+          </div>
+          <div class="progress-bar" style="margin-bottom:0.5rem">
+            <div class="progress-bar-fill" style="width:${pct}%;background:${color}" id="bar-${u.id}"></div>
+          </div>
+          <ul class="checklist unit-body" id="body-${u.id}">
+            ${u.topics.map(t => `
+              <li class="${done.has(t.id)?'done':''}" id="li-${t.id}">
+                <input type="checkbox" ${done.has(t.id)?'checked':''}
+                  onchange="handleCheck('${t.id}','${u.id}',${u.topics.length},'${color}')">
+                <span>${t.text}</span>
+              </li>`).join('')}
+          </ul>
+        </div>`;
+      }).join('');
+      document.getElementById(containerId).innerHTML = `<h2>${title}</h2>${html}`;
+    }
+
+    function renderBooks() {
+      const progress = getBooksProgress();
+      const subColors = { anthro: 'var(--accent2)', gs: 'var(--accent)' };
+      const subLabels = { anthro: 'Anthro', gs: 'GS' };
+      document.getElementById('tab-books').innerHTML = `<h2>Standard Books</h2><div class="card">` +
+        S.books.map(b => {
+          const read = progress[b.id] || 0;
+          const pct = Math.round((read / b.totalPages) * 100);
+          return `<div style="margin-bottom:1.2rem">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.3rem;margin-bottom:0.3rem">
+              <div><span style="font-weight:600">${b.title}</span>
+                <span class="badge ${b.subject==='anthro'?'badge-green':'badge-blue'}" style="margin-left:0.5rem">${subLabels[b.subject]}</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:0.5rem">
+                <input type="number" min="0" max="${b.totalPages}" value="${read}" style="width:75px;text-align:center"
+                  onchange="updateBook('${b.id}',this.value,${b.totalPages},'${subColors[b.subject]}')">
+                <span style="font-size:0.8rem;color:var(--text-muted)">/ ${b.totalPages} pg</span>
+              </div>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-bar-fill" id="bbar-${b.id}" style="width:${pct}%;background:${subColors[b.subject]}"></div>
+            </div>
+            <div class="progress-label" id="blbl-${b.id}">${pct}% complete</div>
+          </div>`;
+        }).join('') + `</div>`;
+    }
+
+    function handleCheck(topicId, unitId, total, color) {
+      const isNowDone = toggleTopic(topicId);
+      const li = document.getElementById('li-' + topicId);
+      if (li) li.classList.toggle('done', isNowDone);
+      const body = document.getElementById('body-' + unitId);
+      if (body) {
+        const n = [...body.querySelectorAll('input[type=checkbox]')].filter(c => c.checked).length;
+        const bar = document.getElementById('bar-' + unitId);
+        if (bar) bar.style.width = Math.round((n / total) * 100) + '%';
+      }
+      renderOverall();
+    }
+
+    function toggleUnit(id) {
+      document.getElementById('body-' + id).classList.toggle('collapsed');
+    }
+
+    function updateBook(bookId, pagesStr, total, color) {
+      const pages = Math.min(Math.max(parseInt(pagesStr)||0, 0), total);
+      saveBookProgress(bookId, pages);
+      const pct = Math.round((pages / total) * 100);
+      const bar = document.getElementById('bbar-' + bookId);
+      const lbl = document.getElementById('blbl-' + bookId);
+      if (bar) bar.style.width = pct + '%';
+      if (lbl) lbl.textContent = pct + '% complete';
+    }
+
+    // Init
+    renderOverall();
+    renderUnits(S.prelims.units,  'tab-prelims',  S.prelims.title,  'var(--accent)');
+    renderUnits(S.csat.units,     'tab-csat',     S.csat.title,     '#f5a623');
+    renderUnits(S.gs1.units,      'tab-gs1',      S.gs1.title,      'var(--accent)');
+    renderUnits(S.gs2.units,      'tab-gs2',      S.gs2.title,      'var(--accent)');
+    renderUnits(S.gs3.units,      'tab-gs3',      S.gs3.title,      'var(--accent)');
+    renderUnits(S.gs4.units,      'tab-gs4',      S.gs4.title,      '#c77dff');
+    renderUnits(S.anthropology.paper1.units, 'tab-anthro1', S.anthropology.paper1.title, 'var(--accent2)');
+    renderUnits(S.anthropology.paper2.units, 'tab-anthro2', S.anthropology.paper2.title, 'var(--accent2)');
+    renderBooks();
+  </script>
+  <script>if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js');</script>
+</body>
+</html>

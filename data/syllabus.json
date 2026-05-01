@@ -1,0 +1,527 @@
+{
+  "prelims": {
+    "title": "Prelims — GS Paper I",
+    "units": [
+      {
+        "id": "pre_hist",
+        "title": "History & Art-Culture",
+        "topics": [
+          { "id": "pre_hist_1", "text": "Ancient India — Indus Valley, Vedic, Mauryan, Gupta, post-Gupta periods" },
+          { "id": "pre_hist_2", "text": "Medieval India — Delhi Sultanate, Vijayanagara, Mughals, Bhakti & Sufi movements" },
+          { "id": "pre_hist_3", "text": "Modern India — 1757 to 1947; East India Company to Independence" },
+          { "id": "pre_hist_4", "text": "Indian National Movement — 1857 revolt, Moderates & Extremists, Gandhi era, INA" },
+          { "id": "pre_hist_5", "text": "Art & Architecture — temple styles, sculptures, paintings (Ajanta, Mughal, etc.)" },
+          { "id": "pre_hist_6", "text": "Literature, music, dance, performing arts" },
+          { "id": "pre_hist_7", "text": "Fairs, festivals, folk traditions" }
+        ]
+      },
+      {
+        "id": "pre_geo",
+        "title": "Geography",
+        "topics": [
+          { "id": "pre_geo_1", "text": "Physical Geography — geomorphology, climatology, oceanography" },
+          { "id": "pre_geo_2", "text": "Indian Geography — physiographic divisions, rivers, soils, natural vegetation" },
+          { "id": "pre_geo_3", "text": "Economic Geography — agriculture, industry, resources" },
+          { "id": "pre_geo_4", "text": "World Geography — continents, major features, climate zones" },
+          { "id": "pre_geo_5", "text": "Maps and atlases — location of places in news" }
+        ]
+      },
+      {
+        "id": "pre_pol",
+        "title": "Indian Polity & Governance",
+        "topics": [
+          { "id": "pre_pol_1", "text": "Constitution — Preamble, Schedules, Amendments" },
+          { "id": "pre_pol_2", "text": "Fundamental Rights, DPSPs, Fundamental Duties" },
+          { "id": "pre_pol_3", "text": "Parliament, Executive, Judiciary" },
+          { "id": "pre_pol_4", "text": "Constitutional bodies — EC, CAG, UPSC, Finance Commission" },
+          { "id": "pre_pol_5", "text": "Local governance — Panchayati Raj, 73rd/74th Amendments" },
+          { "id": "pre_pol_6", "text": "Welfare schemes and policies" }
+        ]
+      },
+      {
+        "id": "pre_eco",
+        "title": "Economy",
+        "topics": [
+          { "id": "pre_eco_1", "text": "Basic economic concepts — GDP, GNP, inflation, fiscal/monetary policy" },
+          { "id": "pre_eco_2", "text": "Indian economy — agriculture, industry, services, trade" },
+          { "id": "pre_eco_3", "text": "Budget, taxation, RBI, banking" },
+          { "id": "pre_eco_4", "text": "Government schemes — PM Awas, MNREGA, Jan Dhan, etc." },
+          { "id": "pre_eco_5", "text": "International organisations — IMF, World Bank, WTO" }
+        ]
+      },
+      {
+        "id": "pre_env",
+        "title": "Environment & Ecology",
+        "topics": [
+          { "id": "pre_env_1", "text": "Ecosystems, biodiversity, food chains, national parks & wildlife sanctuaries" },
+          { "id": "pre_env_2", "text": "Climate change — greenhouse gases, IPCC, Paris Agreement" },
+          { "id": "pre_env_3", "text": "Environmental laws and conventions — CITES, Ramsar, CBD" },
+          { "id": "pre_env_4", "text": "Pollution — air, water, soil; NGT" },
+          { "id": "pre_env_5", "text": "Environmental Impact Assessment; CAMPA; Green India Mission" }
+        ]
+      },
+      {
+        "id": "pre_sci",
+        "title": "Science & Technology",
+        "topics": [
+          { "id": "pre_sci_1", "text": "Physics basics — motion, electricity, light, sound" },
+          { "id": "pre_sci_2", "text": "Chemistry — elements, compounds, everyday chemistry" },
+          { "id": "pre_sci_3", "text": "Biology — cell, genetics, diseases, nutrition, human body systems" },
+          { "id": "pre_sci_4", "text": "Space — ISRO missions, satellites, recent launches" },
+          { "id": "pre_sci_5", "text": "Defence & nuclear technology; AI, robotics, biotech in news" }
+        ]
+      }
+    ]
+  },
+  "csat": {
+    "title": "Prelims — CSAT (Paper II)",
+    "units": [
+      {
+        "id": "csat_comp",
+        "title": "Comprehension & English",
+        "topics": [
+          { "id": "csat_comp_1", "text": "Reading comprehension — passage-based questions" },
+          { "id": "csat_comp_2", "text": "English language comprehension skills" }
+        ]
+      },
+      {
+        "id": "csat_lr",
+        "title": "Logical Reasoning & Analytical Ability",
+        "topics": [
+          { "id": "csat_lr_1", "text": "Series, analogies, odd-one-out, coding-decoding" },
+          { "id": "csat_lr_2", "text": "Blood relations, direction sense, seating arrangement" },
+          { "id": "csat_lr_3", "text": "Syllogisms, statements & assumptions, inferences" },
+          { "id": "csat_lr_4", "text": "Critical reasoning, argument analysis" }
+        ]
+      },
+      {
+        "id": "csat_math",
+        "title": "Basic Numeracy & Data Interpretation",
+        "topics": [
+          { "id": "csat_math_1", "text": "Number system, HCF/LCM, simplification" },
+          { "id": "csat_math_2", "text": "Percentage, profit-loss, ratio-proportion" },
+          { "id": "csat_math_3", "text": "Time-speed-distance, time & work" },
+          { "id": "csat_math_4", "text": "Averages, mixtures, mensuration" },
+          { "id": "csat_math_5", "text": "Data interpretation — tables, bar charts, pie charts, line graphs" }
+        ]
+      },
+      {
+        "id": "csat_dm",
+        "title": "Decision Making & Problem Solving",
+        "topics": [
+          { "id": "csat_dm_1", "text": "Decision-making and problem-solving scenarios" },
+          { "id": "csat_dm_2", "text": "Interpersonal skills, general mental ability" }
+        ]
+      }
+    ]
+  },
+  "gs1": {
+    "title": "Mains — GS Paper I (History, Geography, Society)",
+    "units": [
+      {
+        "id": "gs1_culture",
+        "title": "Indian Heritage & Culture",
+        "topics": [
+          { "id": "gs1_cult_1", "text": "Salient aspects of Art Forms, Literature and Architecture from ancient to modern times" },
+          { "id": "gs1_cult_2", "text": "Modern Indian history from 1750 — significant events, personalities, issues" },
+          { "id": "gs1_cult_3", "text": "Freedom Struggle — its various stages and important contributors" },
+          { "id": "gs1_cult_4", "text": "Post-independence consolidation & reorganisation within the country" },
+          { "id": "gs1_cult_5", "text": "History of the world — colonisation, de-colonisation, world wars, cold war" }
+        ]
+      },
+      {
+        "id": "gs1_society",
+        "title": "Indian Society",
+        "topics": [
+          { "id": "gs1_soc_1", "text": "Salient features of Indian Society, diversity of India" },
+          { "id": "gs1_soc_2", "text": "Role of women and women's organisations; Social empowerment" },
+          { "id": "gs1_soc_3", "text": "Communalism, Regionalism, Secularism" },
+          { "id": "gs1_soc_4", "text": "Urbanisation — growth and associated problems" },
+          { "id": "gs1_soc_5", "text": "Population and associated issues; Poverty and developmental issues; Globalisation and effects on Indian society" }
+        ]
+      },
+      {
+        "id": "gs1_geo",
+        "title": "Geography",
+        "topics": [
+          { "id": "gs1_geo_1", "text": "Physical Geography — Salient features of world's physical geography" },
+          { "id": "gs1_geo_2", "text": "Distribution of key natural resources across the world" },
+          { "id": "gs1_geo_3", "text": "Changes in critical geographical features and flora & fauna" },
+          { "id": "gs1_geo_4", "text": "Important geophysical phenomena — earthquakes, tsunamis, volcanoes, cyclones" }
+        ]
+      }
+    ]
+  },
+  "gs2": {
+    "title": "Mains — GS Paper II (Polity, Governance, IR)",
+    "units": [
+      {
+        "id": "gs2_pol",
+        "title": "Indian Constitution & Polity",
+        "topics": [
+          { "id": "gs2_pol_1", "text": "Indian Constitution — historical underpinnings, evolution, features, amendments, significant provisions" },
+          { "id": "gs2_pol_2", "text": "Functions and responsibilities of Union and States; Centre-State relations" },
+          { "id": "gs2_pol_3", "text": "Parliament and State Legislatures — structure, functioning, conduct of business" },
+          { "id": "gs2_pol_4", "text": "Executive and Judiciary — structure, organisation, functioning" },
+          { "id": "gs2_pol_5", "text": "Ministries and Departments of Government; Pressure Groups and formal/informal associations" },
+          { "id": "gs2_pol_6", "text": "Appointment to various Constitutional positions; powers, functions and responsibilities" }
+        ]
+      },
+      {
+        "id": "gs2_gov",
+        "title": "Governance & Social Justice",
+        "topics": [
+          { "id": "gs2_gov_1", "text": "Government policies and interventions for development in various sectors" },
+          { "id": "gs2_gov_2", "text": "Development processes and the development industry; NGOs, SHGs, etc." },
+          { "id": "gs2_gov_3", "text": "Welfare schemes for vulnerable sections; mechanisms, laws, institutions for protection" },
+          { "id": "gs2_gov_4", "text": "Issues relating to health, education, human resources" },
+          { "id": "gs2_gov_5", "text": "Issues related to poverty and hunger; Important aspects of governance — transparency, accountability, e-Governance" }
+        ]
+      },
+      {
+        "id": "gs2_ir",
+        "title": "International Relations",
+        "topics": [
+          { "id": "gs2_ir_1", "text": "India's foreign policy; Indian diaspora" },
+          { "id": "gs2_ir_2", "text": "India and its neighbourhood — bilateral relations" },
+          { "id": "gs2_ir_3", "text": "Effect of policies and politics of developed and developing countries on India's interests" },
+          { "id": "gs2_ir_4", "text": "Important international institutions, agencies and fora — their structure, mandate" },
+          { "id": "gs2_ir_5", "text": "Bilateral, regional and global groupings — SAARC, BRICS, G20, SCO, etc." }
+        ]
+      }
+    ]
+  },
+  "gs3": {
+    "title": "Mains — GS Paper III (Economy, Environment, Security)",
+    "units": [
+      {
+        "id": "gs3_eco",
+        "title": "Indian Economy & Development",
+        "topics": [
+          { "id": "gs3_eco_1", "text": "Indian economy and planning — inclusive growth, budgeting, mobilisation of resources" },
+          { "id": "gs3_eco_2", "text": "Agriculture — irrigation, farm subsidies, MSP, food security, PDS" },
+          { "id": "gs3_eco_3", "text": "Infrastructure — energy, ports, roads, airports; investment models" },
+          { "id": "gs3_eco_4", "text": "Science and Technology — applications in agriculture, food processing" },
+          { "id": "gs3_eco_5", "text": "Industrial policy and growth; effects of globalisation" }
+        ]
+      },
+      {
+        "id": "gs3_env",
+        "title": "Environment & Disaster Management",
+        "topics": [
+          { "id": "gs3_env_1", "text": "Conservation, environmental pollution and degradation; EIA" },
+          { "id": "gs3_env_2", "text": "Disaster and disaster management — NDMA, vulnerable areas" },
+          { "id": "gs3_env_3", "text": "Linkages between development and spread of extremism; role of external state and non-state actors" }
+        ]
+      },
+      {
+        "id": "gs3_sci",
+        "title": "Science & Technology",
+        "topics": [
+          { "id": "gs3_sci_1", "text": "Developments and their applications in everyday life; achievements of Indians in S&T" },
+          { "id": "gs3_sci_2", "text": "Indigenisation of technology and developing new technology" },
+          { "id": "gs3_sci_3", "text": "Awareness in IT, Space, Computers, robotics, nano-technology, bio-technology" },
+          { "id": "gs3_sci_4", "text": "Intellectual property rights" }
+        ]
+      },
+      {
+        "id": "gs3_sec",
+        "title": "Internal Security",
+        "topics": [
+          { "id": "gs3_sec_1", "text": "Challenges to internal security — terrorism, insurgency, left-wing extremism" },
+          { "id": "gs3_sec_2", "text": "Security forces and agencies; cybersecurity" },
+          { "id": "gs3_sec_3", "text": "Money-laundering and its prevention" },
+          { "id": "gs3_sec_4", "text": "Border management; organised crime and terrorism linkages" }
+        ]
+      }
+    ]
+  },
+  "gs4": {
+    "title": "Mains — GS Paper IV (Ethics, Integrity & Aptitude)",
+    "units": [
+      {
+        "id": "gs4_eth",
+        "title": "Ethics & Human Interface",
+        "topics": [
+          { "id": "gs4_eth_1", "text": "Essence, determinants and consequences of Ethics in human actions" },
+          { "id": "gs4_eth_2", "text": "Dimensions of Ethics; Ethics in private and public relationships" },
+          { "id": "gs4_eth_3", "text": "Human Values — lessons from lives and teachings of great leaders, reformers and administrators" },
+          { "id": "gs4_eth_4", "text": "Role of family, society and educational institutions in inculcating values" }
+        ]
+      },
+      {
+        "id": "gs4_att",
+        "title": "Attitude, Aptitude & Emotional Intelligence",
+        "topics": [
+          { "id": "gs4_att_1", "text": "Attitude — content, structure, function; its influence on thought and behaviour" },
+          { "id": "gs4_att_2", "text": "Aptitude and foundational values for Civil Services — integrity, impartiality, non-partisanship, dedication to public service" },
+          { "id": "gs4_att_3", "text": "Emotional intelligence — concepts, utilities and application in administration and governance" },
+          { "id": "gs4_att_4", "text": "Contributions of moral thinkers and philosophers from India and the world" }
+        ]
+      },
+      {
+        "id": "gs4_pub",
+        "title": "Public/Civil Service Values & Probity",
+        "topics": [
+          { "id": "gs4_pub_1", "text": "Public/civil service values and ethics in Public administration" },
+          { "id": "gs4_pub_2", "text": "Status and problems; ethical concerns in government and private institutions" },
+          { "id": "gs4_pub_3", "text": "Probity in Governance — concept of public service; philosophical basis of governance and probity" },
+          { "id": "gs4_pub_4", "text": "Information sharing and transparency in government; RTI; codes of ethics, codes of conduct" },
+          { "id": "gs4_pub_5", "text": "Citizen's Charters; work culture; quality of service delivery; utilisation of public funds" },
+          { "id": "gs4_pub_6", "text": "Case Studies — applying ethical principles to real situations" }
+        ]
+      }
+    ]
+  },
+  "anthropology": {
+    "paper1": {
+      "title": "Anthropology — Paper I (General)",
+      "units": [
+        {
+          "id": "p1u1",
+          "title": "1. Meaning, Scope & Development of Anthropology",
+          "topics": [
+            { "id": "p1u1t1", "text": "Meaning, scope and development of Anthropology" },
+            { "id": "p1u1t2", "text": "Relationships with Social Sciences, Biological Sciences, Medical Sciences, Earth Sciences, Humanities" },
+            { "id": "p1u1t3", "text": "Main branches of Anthropology, their scope and relevance" },
+            { "id": "p1u1t4", "text": "Human Evolution and emergence of Man — biological and cultural factors" }
+          ]
+        },
+        {
+          "id": "p1u2",
+          "title": "2. Family, Marriage & Kinship",
+          "topics": [
+            { "id": "p1u2t1", "text": "Family — definition, types, functions, changing perspectives" },
+            { "id": "p1u2t2", "text": "Marriage — definition, types, functions; marriage regulations; marriage payments" },
+            { "id": "p1u2t3", "text": "Kinship — terminology, descent, lineage, clan, phratry, moiety" },
+            { "id": "p1u2t4", "text": "Residence rules; preferential and prescriptive marriage" }
+          ]
+        },
+        {
+          "id": "p1u3",
+          "title": "3. Economic Organisation",
+          "topics": [
+            { "id": "p1u3t1", "text": "Meaning, scope and relevance of economic anthropology" },
+            { "id": "p1u3t2", "text": "Formalist vs Substantivist debate; Modes of exchange — reciprocity, redistribution, market" },
+            { "id": "p1u3t3", "text": "Concepts of private property, land tenure, concepts of money" },
+            { "id": "p1u3t4", "text": "Hunters & gatherers, pastoralism, horticulture, agriculture, industrialism" }
+          ]
+        },
+        {
+          "id": "p1u4",
+          "title": "4. Political Organisation & Social Control",
+          "topics": [
+            { "id": "p1u4t1", "text": "Band, tribe, chiefdom, kingdom, state — political typologies" },
+            { "id": "p1u4t2", "text": "Concept of power, authority, legitimacy" },
+            { "id": "p1u4t3", "text": "Social control, law and justice in simple societies" }
+          ]
+        },
+        {
+          "id": "p1u5",
+          "title": "5. Religion, Magic & Witchcraft",
+          "topics": [
+            { "id": "p1u5t1", "text": "Anthropological approaches to study of religion" },
+            { "id": "p1u5t2", "text": "Animism, animatism, totemism, taboo, fetishism" },
+            { "id": "p1u5t3", "text": "Shamanism; sects and cults; myth and ritual" },
+            { "id": "p1u5t4", "text": "Functions of magic, sorcery and witchcraft" }
+          ]
+        },
+        {
+          "id": "p1u6",
+          "title": "6. Anthropological Theories",
+          "topics": [
+            { "id": "p1u6t1", "text": "Classical Evolutionism — Tylor, Morgan, Spencer" },
+            { "id": "p1u6t2", "text": "Historical Particularism — Boas; Diffusionism — British & German" },
+            { "id": "p1u6t3", "text": "Functionalism — Malinowski; Structural-Functionalism — Radcliffe-Brown" },
+            { "id": "p1u6t4", "text": "Structuralism — Lévi-Strauss; Culture & Personality school" },
+            { "id": "p1u6t5", "text": "Neo-evolutionism — White, Steward; Cultural ecology" },
+            { "id": "p1u6t6", "text": "Marxist anthropology; Symbolic & Interpretive anthropology" },
+            { "id": "p1u6t7", "text": "Post-modern anthropology; feminist anthropology" }
+          ]
+        },
+        {
+          "id": "p1u7",
+          "title": "7. Culture, Language & Communication",
+          "topics": [
+            { "id": "p1u7t1", "text": "Nature, origin and characteristics of language" },
+            { "id": "p1u7t2", "text": "Language and culture; language and cognition; non-verbal communication" },
+            { "id": "p1u7t3", "text": "Social context of language use; sociolinguistics" }
+          ]
+        },
+        {
+          "id": "p1u8",
+          "title": "8. Research Methods in Anthropology",
+          "topics": [
+            { "id": "p1u8t1", "text": "Fieldwork tradition in anthropology; participant observation" },
+            { "id": "p1u8t2", "text": "Interview methods, genealogical method, case study, extended case method" },
+            { "id": "p1u8t3", "text": "Analysis of quantitative and qualitative data; sampling methods" },
+            { "id": "p1u8t4", "text": "Ethics of anthropological research" }
+          ]
+        },
+        {
+          "id": "p1u9",
+          "title": "9. Human Genetics",
+          "topics": [
+            { "id": "p1u9t1", "text": "Methods for study of genetic principles in man" },
+            { "id": "p1u9t2", "text": "Mendelian genetics in man; chromosomal theory of inheritance" },
+            { "id": "p1u9t3", "text": "ABO, Rh blood groups; HLA; chromosomal aberrations" },
+            { "id": "p1u9t4", "text": "Population genetics — gene frequency, Hardy-Weinberg law, selection, mutation" },
+            { "id": "p1u9t5", "text": "Genetic disorders — thalassemia, sickle cell anaemia, colour blindness, haemophilia" }
+          ]
+        },
+        {
+          "id": "p1u10",
+          "title": "10. Concept of Race",
+          "topics": [
+            { "id": "p1u10t1", "text": "Historical and biological concept of race; racial classifications" },
+            { "id": "p1u10t2", "text": "Race and intelligence debate; racism; racial hybridity" },
+            { "id": "p1u10t3", "text": "Biological basis of morphological variation — skin colour, stature, cephalic index, etc." }
+          ]
+        },
+        {
+          "id": "p1u11",
+          "title": "11. Age, Sex & Population",
+          "topics": [
+            { "id": "p1u11t1", "text": "Concept of biological age; determination of sex" },
+            { "id": "p1u11t2", "text": "Demographic concepts — fertility, mortality, migration, life expectancy" },
+            { "id": "p1u11t3", "text": "Ecological anthropology; concept of biosphere; human adaptation to climate, high altitude" }
+          ]
+        },
+        {
+          "id": "p1u12",
+          "title": "12. Primate Behaviour",
+          "topics": [
+            { "id": "p1u12t1", "text": "Non-human primates — classification; socio-ecological characteristics" },
+            { "id": "p1u12t2", "text": "Primate behaviour — social structure, communication, tool use, learning" },
+            { "id": "p1u12t3", "text": "Relevance of primate studies for understanding human behaviour and evolution" }
+          ]
+        }
+      ]
+    },
+    "paper2": {
+      "title": "Anthropology — Paper II (Indian Context)",
+      "units": [
+        {
+          "id": "p2u1",
+          "title": "1. Evolution of Indian Culture & Civilisation",
+          "topics": [
+            { "id": "p2u1t1", "text": "Prehistoric foundations — Paleolithic, Mesolithic, Neolithic cultures in India" },
+            { "id": "p2u1t2", "text": "Protohistoric cultures — Indus Valley Civilisation" },
+            { "id": "p2u1t3", "text": "Contributions of tribal cultures to Indian civilisation" }
+          ]
+        },
+        {
+          "id": "p2u2",
+          "title": "2. Ethno-archaeology in India",
+          "topics": [
+            { "id": "p2u2t1", "text": "Concept of ethno-archaeology; camping sites, settlement patterns, cultural remains" },
+            { "id": "p2u2t2", "text": "Ethno-archaeological research in India — case studies" }
+          ]
+        },
+        {
+          "id": "p2u3",
+          "title": "3. Demographic Profile of India",
+          "topics": [
+            { "id": "p2u3t1", "text": "Ethnic and linguistic elements in Indian population and their distribution" },
+            { "id": "p2u3t2", "text": "Indian population — growth, distribution, composition; racial elements" },
+            { "id": "p2u3t3", "text": "Scheduled Castes, Scheduled Tribes, Other Backward Classes — size and distribution" }
+          ]
+        },
+        {
+          "id": "p2u4",
+          "title": "4. Traditional Indian Social System",
+          "topics": [
+            { "id": "p2u4t1", "text": "Varnashrama; purushartha; karma, rina and punarjanma; concepts of pollution and purity" },
+            { "id": "p2u4t2", "text": "Jajmani system; sacred complex; nature-man-spirit complex" },
+            { "id": "p2u4t3", "text": "Caste system — origin, characteristics, untouchability, changes; inter-caste relations" }
+          ]
+        },
+        {
+          "id": "p2u5",
+          "title": "5. Emergence & Growth of Indian Anthropology",
+          "topics": [
+            { "id": "p2u5t1", "text": "Historical development of Indian anthropology — colonial to contemporary" },
+            { "id": "p2u5t2", "text": "Contributions of Indian anthropologists — G.S. Ghurye, M.N. Srinivas, Verrier Elwin, S.C. Dube" },
+            { "id": "p2u5t3", "text": "Unity in diversity — integration, assimilation; 'little' and 'great' tradition" }
+          ]
+        },
+        {
+          "id": "p2u6",
+          "title": "6. Tribal Situation in India",
+          "topics": [
+            { "id": "p2u6t1", "text": "Bio-genetic variability of tribal populations; isolation and gene drift" },
+            { "id": "p2u6t2", "text": "Linguistic and socio-economic characteristics of tribal communities" },
+            { "id": "p2u6t3", "text": "Geographical distribution — tribal belts; hill tribes, plains tribes" },
+            { "id": "p2u6t4", "text": "Colonial policies and major tribal movements — Santhal, Munda, Birsa Munda" }
+          ]
+        },
+        {
+          "id": "p2u7",
+          "title": "7. Problems of Tribal Communities",
+          "topics": [
+            { "id": "p2u7t1", "text": "Literacy, education problems and developmental education" },
+            { "id": "p2u7t2", "text": "Nutritional status, health problems, reproductive health" },
+            { "id": "p2u7t3", "text": "Alcoholism and substance abuse; problems of displacement and rehabilitation" }
+          ]
+        },
+        {
+          "id": "p2u8",
+          "title": "8. Tribal Policy, Law & Development",
+          "topics": [
+            { "id": "p2u8t1", "text": "Constitutional safeguards — Fifth and Sixth Schedules; Art. 15, 16, 46, 340" },
+            { "id": "p2u8t2", "text": "Land alienation, forest rights; FRA 2006; tribal land reform" },
+            { "id": "p2u8t3", "text": "ITDP, TSP (Tribal Sub-Plan), MADA, Clusters; role of NGOs" },
+            { "id": "p2u8t4", "text": "Development-induced displacement; LARR Act 2013" }
+          ]
+        },
+        {
+          "id": "p2u9",
+          "title": "9. Social Change & Contemporary Indian Society",
+          "topics": [
+            { "id": "p2u9t1", "text": "Processes of change — sanskritization, westernization, modernization (Srinivas)" },
+            { "id": "p2u9t2", "text": "Tribal and agrarian movements; socio-religious reform movements" },
+            { "id": "p2u9t3", "text": "Impact of development projects on tribal societies; globalisation impact" }
+          ]
+        },
+        {
+          "id": "p2u10",
+          "title": "10. Applied Anthropology",
+          "topics": [
+            { "id": "p2u10t1", "text": "Scope and relevance of applied anthropology; action anthropology" },
+            { "id": "p2u10t2", "text": "Medical anthropology; nutritional anthropology; developmental anthropology" },
+            { "id": "p2u10t3", "text": "Concept of participatory development; PRA, RRA" },
+            { "id": "p2u10t4", "text": "Forensic anthropology — identification, skeletal analysis" }
+          ]
+        }
+      ]
+    }
+  },
+  "books": [
+    { "id": "b1", "title": "P.K. Misra — Indian Anthropology", "subject": "anthro", "totalPages": 450 },
+    { "id": "b2", "title": "Nadeem Hasnain — Tribal India", "subject": "anthro", "totalPages": 320 },
+    { "id": "b3", "title": "Ember & Ember — Anthropology (13th Ed.)", "subject": "anthro", "totalPages": 680 },
+    { "id": "b4", "title": "Nanda & Warms — Cultural Anthropology", "subject": "anthro", "totalPages": 520 },
+    { "id": "b5", "title": "NCERT — Class XI Ancient India (R.S. Sharma)", "subject": "gs", "totalPages": 250 },
+    { "id": "b6", "title": "Bipin Chandra — Modern India", "subject": "gs", "totalPages": 340 },
+    { "id": "b7", "title": "M. Laxmikanth — Indian Polity", "subject": "gs", "totalPages": 700 },
+    { "id": "b8", "title": "Ramesh Singh — Indian Economy", "subject": "gs", "totalPages": 610 }
+  ],
+  "nextias_modules": [
+    { "id": "ni_eco", "title": "Economy", "gs_paper": "GS III", "status": "completed", "completedDate": "2025-12" },
+    { "id": "ni_env", "title": "Environment & Ecology", "gs_paper": "GS III / Prelims", "status": "completed", "completedDate": "2025-12" },
+    { "id": "ni_sci", "title": "General Science", "gs_paper": "Prelims / GS III", "status": "completed", "completedDate": "2026-01" },
+    { "id": "ni_sci2", "title": "Science Foundational", "gs_paper": "GS III", "status": "completed", "completedDate": "2026-02" },
+    { "id": "ni_csat", "title": "Aptitude / CSAT", "gs_paper": "Prelims Paper II", "status": "ongoing", "completedDate": null },
+    { "id": "ni_hist", "title": "History (Ancient + Medieval + Modern)", "gs_paper": "GS I / Prelims", "status": "upcoming", "completedDate": null },
+    { "id": "ni_geo", "title": "Geography (Indian + World)", "gs_paper": "GS I / Prelims", "status": "upcoming", "completedDate": null },
+    { "id": "ni_pol", "title": "Indian Polity & Constitution", "gs_paper": "GS II / Prelims", "status": "upcoming", "completedDate": null },
+    { "id": "ni_cult", "title": "Art & Culture", "gs_paper": "GS I / Prelims", "status": "upcoming", "completedDate": null },
+    { "id": "ni_gov", "title": "Governance & Social Justice", "gs_paper": "GS II", "status": "upcoming", "completedDate": null },
+    { "id": "ni_ir", "title": "International Relations", "gs_paper": "GS II", "status": "upcoming", "completedDate": null },
+    { "id": "ni_sec", "title": "Internal Security", "gs_paper": "GS III", "status": "upcoming", "completedDate": null },
+    { "id": "ni_eth", "title": "Ethics (GS IV)", "gs_paper": "GS IV", "status": "upcoming", "completedDate": null },
+    { "id": "ni_anthro", "title": "Anthropology Optional", "gs_paper": "Optional I + II", "status": "upcoming", "completedDate": null },
+    { "id": "ni_essay", "title": "Essay Writing", "gs_paper": "GS Essay", "status": "upcoming", "completedDate": null },
+    { "id": "ni_ca", "title": "Current Affairs (Weekly — ongoing)", "gs_paper": "All Papers", "status": "ongoing", "completedDate": null }
+  ]
+}

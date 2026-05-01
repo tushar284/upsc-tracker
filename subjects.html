@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="UPSC">
+  <meta name="theme-color" content="#0f1117">
+  <link rel="manifest" href="manifest.json">
+  <title>Subjects — Tushar Progress</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .subj-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 1rem; overflow: hidden; }
+    .subj-header {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 1rem 1.25rem; cursor: pointer;
+      border-bottom: 1px solid transparent; transition: background 0.15s;
+    }
+    .subj-header:hover { background: var(--surface2); }
+    .subj-header.open { border-bottom-color: var(--border); }
+    .subj-title { flex: 1; font-weight: 600; font-size: 1rem; }
+    .subj-meta { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.1rem; }
+    .subj-pct { font-size: 0.85rem; color: var(--accent); font-weight: 600; min-width: 40px; text-align: right; }
+    .subj-body { padding: 0; display: none; }
+    .subj-body.open { display: block; }
+    .track-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    .track-table th { padding: 0.5rem 0.75rem; background: var(--surface2); color: var(--text-muted); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border); }
+    .track-table th:first-child { text-align: left; }
+    .track-table th:not(:first-child) { text-align: center; width: 90px; }
+    .track-table td { padding: 0.55rem 0.75rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    .track-table td:first-child { color: var(--text); font-size: 0.85rem; line-height: 1.4; }
+    .track-table td:not(:first-child) { text-align: center; }
+    .track-table tr:last-child td { border-bottom: none; }
+    .track-table tr:hover td { background: var(--surface2); }
+    .track-chk { width: 18px; height: 18px; cursor: pointer; }
+    .track-chk.class-chk  { accent-color: #6c8ef5; }
+    .track-chk.notes-chk  { accent-color: #52c99e; }
+    .track-chk.book-chk   { accent-color: #f5a623; }
+    .subj-progress-bar { height: 4px; background: var(--border); }
+    .subj-progress-fill { height: 4px; transition: width 0.3s; }
+    .coach-badge { font-size: 0.7rem; padding: 0.15rem 0.5rem; border-radius: 99px; flex-shrink: 0; }
+    .cb-done    { background: #183d30; color: var(--accent2); }
+    .cb-ongoing { background: #3d2e10; color: var(--accent3); }
+    .cb-upcoming{ background: var(--surface2); color: var(--text-muted); }
+    .col-header-wrap { display: flex; align-items: center; justify-content: center; gap: 0.3rem; flex-direction: column; }
+    .col-dot { width: 8px; height: 8px; border-radius: 50%; }
+    @media(max-width: 560px) {
+      .track-table th:not(:first-child), .track-table td:not(:first-child) { width: 60px; }
+      .track-table th .col-label { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <span class="nav-brand">📚 Tushar</span>
+    <a href="index.html">Dashboard</a>
+    <a href="course.html">Course</a>
+    <a href="topics.html">Topics</a>
+    <a href="subjects.html" class="active">Subjects</a>
+  </nav>
+
+  <main>
+    <h1>Subject-wise Tracker</h1>
+    <p style="color:var(--text-muted);font-size:0.88rem;margin-bottom:1.25rem">
+      For each topic: track whether the <span style="color:#6c8ef5">coaching class</span> covered it,
+      whether you've <span style="color:#52c99e">revised your notes</span>,
+      and whether you've <span style="color:#f5a623">read the book chapter</span>.
+    </p>
+
+    <div class="card-grid" id="summaryStats"></div>
+
+    <div id="subjectList"></div>
+  </main>
+
+  <script src="js/storage.js"></script>
+  <script src="data/syllabus.js"></script>
+  <script>
+  // ── Data: subjects with per-topic tracking ────────────────────────────────
+
+  const SUBJECTS = [
+    {
+      id: 'eco', title: 'Economy', paper: 'GS III + Prelims', coaching: 'completed',
+      color: '#6c8ef5',
+      books: ['Ramesh Singh — Indian Economy', 'NCERT Class 11 Economics'],
+      topics: [
+        { id: 'eco_1', text: 'GDP, GNP, NNP — concepts and differences' },
+        { id: 'eco_2', text: 'Inflation — types (WPI, CPI), causes, effects, measures' },
+        { id: 'eco_3', text: 'Fiscal policy — budget, deficits, FRBM Act' },
+        { id: 'eco_4', text: 'Monetary policy — RBI, CRR, SLR, repo rate, OMO' },
+        { id: 'eco_5', text: 'Banking — types of banks, NPA, Basel norms' },
+        { id: 'eco_6', text: 'Agriculture — Green Revolution, MSP, food security, PDS, e-NAM' },
+        { id: 'eco_7', text: 'Industry — industrial policy, MSME, Make in India' },
+        { id: 'eco_8', text: 'Infrastructure — investment models, PPP, NITI Aayog' },
+        { id: 'eco_9', text: 'International trade — BoP, WTO, FTAs' },
+        { id: 'eco_10', text: 'Inclusive growth — poverty, HDI, welfare schemes (MNREGA, PM-KISAN, Jan Dhan)' },
+      ]
+    },
+    {
+      id: 'env', title: 'Environment & Ecology', paper: 'GS III + Prelims', coaching: 'completed',
+      color: '#52c99e',
+      books: ['Shankar IAS — Environment', 'NCERT Class 12 Biology (Ecology)'],
+      topics: [
+        { id: 'env_1', text: 'Ecosystems — types, food chains, food webs, energy flow' },
+        { id: 'env_2', text: 'Biodiversity — levels, hotspots, threats, conservation strategies (in-situ, ex-situ)' },
+        { id: 'env_3', text: 'National parks, wildlife sanctuaries, biosphere reserves, Ramsar sites' },
+        { id: 'env_4', text: 'Climate change — greenhouse gases, IPCC reports, global warming impacts' },
+        { id: 'env_5', text: 'International conventions — UNFCCC, Paris Agreement, CBD, CITES, Ramsar, Basel' },
+        { id: 'env_6', text: 'Pollution — air (NAAQS, AQI), water (BIS norms), soil, noise, e-waste' },
+        { id: 'env_7', text: 'Environmental laws — EPA 1986, Forest Act, Wildlife Protection Act, NGT' },
+        { id: 'env_8', text: 'EIA, CRZ, Coastal Regulation Zone, Green India Mission' },
+        { id: 'env_9', text: 'Disaster management — NDMA, NDRF, types of disasters, Sendai Framework' },
+      ]
+    },
+    {
+      id: 'sci', title: 'Science & Technology', paper: 'GS III + Prelims', coaching: 'completed',
+      color: '#c77dff',
+      books: ['NCERT Class 9–10 Science', 'Vision IAS Science & Technology notes'],
+      topics: [
+        { id: 'sci_1', text: 'Physics basics — motion, force, work, electricity, magnetism' },
+        { id: 'sci_2', text: 'Chemistry — periodic table, acids/bases, polymers, everyday chemistry' },
+        { id: 'sci_3', text: 'Biology — cell biology, genetics (DNA, RNA), diseases, vaccines' },
+        { id: 'sci_4', text: 'Space — ISRO milestones, Chandrayaan, Gaganyaan, satellites, PSLV vs GSLV' },
+        { id: 'sci_5', text: 'Defence — DRDO, missiles (Agni, BrahMos), nuclear doctrine' },
+        { id: 'sci_6', text: 'Biotechnology — GMO crops, CRISPR, stem cells, mRNA vaccines' },
+        { id: 'sci_7', text: 'AI, robotics, nano-technology, quantum computing — basics and applications' },
+        { id: 'sci_8', text: 'Intellectual Property Rights — patents, copyrights, TRIPS, GI tags' },
+      ]
+    },
+    {
+      id: 'csat', title: 'CSAT / Aptitude', paper: 'Prelims Paper II', coaching: 'ongoing',
+      color: '#f5a623',
+      books: ['R.S. Aggarwal — Quantitative Aptitude', 'Arihant CSAT Paper 2'],
+      topics: [
+        { id: 'csat_1', text: 'Number system — HCF, LCM, factors, simplification' },
+        { id: 'csat_2', text: 'Percentage, profit & loss, discount' },
+        { id: 'csat_3', text: 'Ratio & proportion, averages, mixtures & allegation' },
+        { id: 'csat_4', text: 'Time-speed-distance, time & work, pipes & cisterns' },
+        { id: 'csat_5', text: 'Data interpretation — tables, bar charts, line graphs, pie charts' },
+        { id: 'csat_6', text: 'Logical reasoning — series, coding, blood relations, direction' },
+        { id: 'csat_7', text: 'Syllogisms, statements & assumptions, cause & effect' },
+        { id: 'csat_8', text: 'Reading comprehension — passage-based questions (English)' },
+        { id: 'csat_9', text: 'Decision making & problem solving scenarios' },
+      ]
+    },
+    {
+      id: 'hist', title: 'History', paper: 'GS I + Prelims', coaching: 'upcoming',
+      color: '#6c8ef5',
+      books: ['NCERT Ancient India (R.S. Sharma)', 'NCERT Medieval India (Satish Chandra)', 'Bipin Chandra — Modern India', 'Spectrum — Modern History'],
+      topics: [
+        { id: 'hist_1', text: 'Ancient India — Indus Valley, Vedic period, Buddhism & Jainism, Mauryas' },
+        { id: 'hist_2', text: 'Ancient India — Gupta Empire, post-Gupta, South India dynasties' },
+        { id: 'hist_3', text: 'Medieval India — Delhi Sultanate, Vijayanagara, Deccan Kingdoms' },
+        { id: 'hist_4', text: 'Medieval India — Mughal Empire, Bhakti & Sufi movements' },
+        { id: 'hist_5', text: 'Modern India — European arrival, Battle of Plassey, British expansion' },
+        { id: 'hist_6', text: 'Modern India — 1857 Revolt, social reform movements, nationalist awakening' },
+        { id: 'hist_7', text: 'Freedom Movement — Moderate/Extremist phase, Gandhi, Civil Disobedience, Quit India' },
+        { id: 'hist_8', text: 'Partition and Independence; Post-independence consolidation' },
+        { id: 'hist_9', text: 'World History — World Wars, Cold War, decolonisation' },
+      ]
+    },
+    {
+      id: 'geo', title: 'Geography', paper: 'GS I + Prelims', coaching: 'upcoming',
+      color: '#52c99e',
+      books: ['NCERT Class 11 Physical Geography', 'NCERT Class 12 India — People & Economy', 'Majid Husain — Geography of India'],
+      topics: [
+        { id: 'geo_1', text: 'Physical geography — geomorphology (landforms, rock types, weathering)' },
+        { id: 'geo_2', text: 'Climatology — atmospheric circulation, monsoons, El Niño, climate zones' },
+        { id: 'geo_3', text: 'Oceanography — ocean currents, tides, ENSO, marine resources' },
+        { id: 'geo_4', text: 'Indian physiographic divisions — Himalayas, plains, plateaus, coastal plains, islands' },
+        { id: 'geo_5', text: 'Indian rivers — classification, drainage patterns, important projects' },
+        { id: 'geo_6', text: 'Soils, natural vegetation, forests of India' },
+        { id: 'geo_7', text: 'Indian agriculture — types of farming, major crops, agro-climatic zones' },
+        { id: 'geo_8', text: 'Economic geography — minerals, energy resources, industries, transport' },
+        { id: 'geo_9', text: 'Human geography — population distribution, urbanisation, migration' },
+        { id: 'geo_10', text: 'World geography — major regions, continents, climate zones, places in news' },
+      ]
+    },
+    {
+      id: 'pol', title: 'Indian Polity', paper: 'GS II + Prelims', coaching: 'upcoming',
+      color: '#6c8ef5',
+      books: ['M. Laxmikanth — Indian Polity (6th Ed.)', 'DD Basu — Introduction to the Constitution'],
+      topics: [
+        { id: 'pol_1', text: 'Constitution — Preamble, making, Schedules, salient features' },
+        { id: 'pol_2', text: 'Fundamental Rights (Art. 12–35) — details, exceptions, writs' },
+        { id: 'pol_3', text: 'DPSPs (Art. 36–51) and Fundamental Duties' },
+        { id: 'pol_4', text: 'Parliament — Lok Sabha, Rajya Sabha, sessions, bills, budget process' },
+        { id: 'pol_5', text: 'President, Prime Minister, Council of Ministers, Cabinet' },
+        { id: 'pol_6', text: 'Judiciary — Supreme Court, High Courts, judicial review, PILs' },
+        { id: 'pol_7', text: 'Centre-State relations — legislative, administrative, financial' },
+        { id: 'pol_8', text: 'Constitutional bodies — EC, CAG, UPSC, Finance Commission, NHRC' },
+        { id: 'pol_9', text: 'Local self-government — 73rd/74th Amendments, PRIs, urban bodies' },
+        { id: 'pol_10', text: 'Emergency provisions, Amendments, Anti-defection law' },
+      ]
+    },
+    {
+      id: 'cult', title: 'Art & Culture', paper: 'GS I + Prelims', coaching: 'upcoming',
+      color: '#f5a623',
+      books: ['Nitin Singhania — Indian Art and Culture', 'NCERT — An Introduction to Indian Art'],
+      topics: [
+        { id: 'cult_1', text: 'Architecture — Indus, Rock-cut, Buddhist (stupa/vihara/chaitya), Nagara, Dravida, Vesara styles' },
+        { id: 'cult_2', text: 'Paintings — Ajanta, Mughal, Rajput, Madhubani, Warli, Pattachitra' },
+        { id: 'cult_3', text: 'Classical music — Hindustani vs Carnatic, major ragas, instruments, gharanas' },
+        { id: 'cult_4', text: 'Classical dances — Bharatnatyam, Kathak, Odissi, Kuchipudi, Manipuri, Kathakali, Sattriya' },
+        { id: 'cult_5', text: 'Religions — Hinduism, Buddhism, Jainism, Sikhism, Islam, Christianity in India' },
+        { id: 'cult_6', text: 'Philosophies — Advaita, Dvaita, Nyaya, Yoga, Carvaka, Buddhist & Jain schools' },
+        { id: 'cult_7', text: 'Literature — Sanskrit, Pali, Tamil Sangam, Bhakti poets, Mughal era' },
+        { id: 'cult_8', text: 'Fairs, festivals, folk traditions, intangible cultural heritage (UNESCO ICH)' },
+        { id: 'cult_9', text: 'UNESCO World Heritage Sites in India; ASI protected monuments' },
+      ]
+    },
+    {
+      id: 'gov', title: 'Governance & Social Justice', paper: 'GS II', coaching: 'upcoming',
+      color: '#52c99e',
+      books: ['Laxmikanth — Indian Polity (Governance chapters)', 'Vision IAS GS II notes'],
+      topics: [
+        { id: 'gov_1', text: 'Government policies — economic, social, environmental interventions' },
+        { id: 'gov_2', text: 'Welfare schemes — PMAY, Ayushman Bharat, PM Poshan, PMFBY, Ujjwala' },
+        { id: 'gov_3', text: 'e-Governance — Digital India, Aadhaar, UMANG, CoWIN, DBT' },
+        { id: 'gov_4', text: 'Transparency & accountability — RTI, Lokpal, Lokayukta, social audit' },
+        { id: 'gov_5', text: 'Social justice — SC/ST, OBC, minorities, women, PWD, child welfare' },
+        { id: 'gov_6', text: 'Education — NEP 2020, higher education, skill development' },
+        { id: 'gov_7', text: 'Health — NHM, Ayushman Bharat, mental health, AMR, NCD burden' },
+        { id: 'gov_8', text: 'NGOs, SHGs, Civil society — role in development, FCRA' },
+      ]
+    },
+    {
+      id: 'ir', title: 'International Relations', paper: 'GS II', coaching: 'upcoming',
+      color: '#6c8ef5',
+      books: ['Rajiv Sikri — Challenge and Strategy', 'Current Affairs magazines (The Hindu, IE)'],
+      topics: [
+        { id: 'ir_1', text: 'India\'s foreign policy — Panchsheel, NAM, Gujral Doctrine, Neighbourhood First' },
+        { id: 'ir_2', text: 'India–Pakistan, India–China, India–Bangladesh, India–Sri Lanka relations' },
+        { id: 'ir_3', text: 'India–US, India–Russia, India–EU relations' },
+        { id: 'ir_4', text: 'SAARC, BIMSTEC, BRICS, G20, SCO, QUAD, I2U2' },
+        { id: 'ir_5', text: 'UN system — UNSC, UNGA, specialized agencies (WHO, UNESCO, IAEA, WFP)' },
+        { id: 'ir_6', text: 'India and multilateral issues — climate, trade, nuclear non-proliferation' },
+        { id: 'ir_7', text: 'Indian diaspora — role, remittances, PIO, OCI' },
+      ]
+    },
+    {
+      id: 'eth', title: 'Ethics (GS IV)', paper: 'GS IV', coaching: 'upcoming',
+      color: '#c77dff',
+      books: ['Lexicon — Ethics, Integrity & Aptitude', 'Subba Rao — Ethics, Integrity & Aptitude'],
+      topics: [
+        { id: 'eth_1', text: 'Ethics — essence, determinants, dimensions in human actions' },
+        { id: 'eth_2', text: 'Human values — lessons from great leaders; role of family, society, education' },
+        { id: 'eth_3', text: 'Attitude — content, structure, function; influence on thought and behaviour' },
+        { id: 'eth_4', text: 'Emotional intelligence — concepts, utilities, application in governance' },
+        { id: 'eth_5', text: 'Moral thinkers — Gandhi, Ambedkar, Plato, Kant, Mill, Aristotle, Rawls' },
+        { id: 'eth_6', text: 'Aptitude values for Civil Services — integrity, impartiality, dedication to public service' },
+        { id: 'eth_7', text: 'Probity in governance — RTI, accountability, citizen\'s charter, work culture' },
+        { id: 'eth_8', text: 'Case Studies — identifying ethical issues, stakeholder analysis, dilemma resolution' },
+      ]
+    },
+    {
+      id: 'a1', title: 'Anthropology — Paper I', paper: 'Optional', coaching: 'upcoming',
+      color: '#52c99e',
+      books: ['Ember & Ember — Anthropology (13th Ed.)', 'Nanda & Warms — Cultural Anthropology', 'P.K. Misra — Indian Anthropology (for P2 context)'],
+      topics: [
+        { id: 'a1_1', text: 'Meaning, scope, branches and development of Anthropology' },
+        { id: 'a1_2', text: 'Family, Marriage and Kinship systems' },
+        { id: 'a1_3', text: 'Economic Organisation — modes, formalist vs substantivist debate' },
+        { id: 'a1_4', text: 'Political Organisation & Social Control (Band → State typology)' },
+        { id: 'a1_5', text: 'Religion, Magic, Witchcraft — theories and functions' },
+        { id: 'a1_6', text: 'Anthropological Theories — Evolutionism to Post-modernism' },
+        { id: 'a1_7', text: 'Culture, Language & Communication' },
+        { id: 'a1_8', text: 'Research Methods — fieldwork, participant observation, sampling' },
+        { id: 'a1_9', text: 'Human Genetics — Mendelian genetics, population genetics, disorders' },
+        { id: 'a1_10', text: 'Concept of Race — biological basis, racism, morphological variation' },
+        { id: 'a1_11', text: 'Age, Sex, Population — demographic concepts, ecological anthropology' },
+        { id: 'a1_12', text: 'Primate Behaviour — classification, social structure, relevance' },
+      ]
+    },
+    {
+      id: 'a2', title: 'Anthropology — Paper II', paper: 'Optional', coaching: 'upcoming',
+      color: '#52c99e',
+      books: ['Nadeem Hasnain — Tribal India', 'P.K. Misra — Indian Anthropology', 'V. Elwin — works on tribal India'],
+      topics: [
+        { id: 'a2_1', text: 'Evolution of Indian Culture — Prehistoric + Indus Valley Civilisation' },
+        { id: 'a2_2', text: 'Ethno-archaeology in India' },
+        { id: 'a2_3', text: 'Demographic Profile of India (SCs, STs, OBCs, ethnic-linguistic elements)' },
+        { id: 'a2_4', text: 'Traditional Indian Social System — Varnashrama, Jajmani, caste system' },
+        { id: 'a2_5', text: 'Emergence of Indian Anthropology — Ghurye, Srinivas, Elwin, Dube' },
+        { id: 'a2_6', text: 'Tribal Situation — distribution, colonial policies, tribal movements' },
+        { id: 'a2_7', text: 'Problems of Tribal Communities — education, health, displacement' },
+        { id: 'a2_8', text: 'Tribal Policy & Law — Fifth/Sixth Schedules, FRA, LARR, TSP, ITDP' },
+        { id: 'a2_9', text: 'Social Change — sanskritization, westernization, modernization; reform movements' },
+        { id: 'a2_10', text: 'Applied Anthropology — medical, nutritional, forensic, participatory development' },
+      ]
+    },
+  ];
+
+  // ── Storage helpers ────────────────────────────────────────────────────────
+
+  const SP_KEY = 'subj_progress';
+
+  function getSubjProgress() {
+    try { return JSON.parse(localStorage.getItem(SP_KEY) || '{}'); } catch { return {}; }
+  }
+
+  function toggleSubjItem(topicId, type) {
+    const sp = getSubjProgress();
+    if (!sp[topicId]) sp[topicId] = {};
+    sp[topicId][type] = !sp[topicId][type];
+    localStorage.setItem(SP_KEY, JSON.stringify(sp));
+    return sp[topicId][type];
+  }
+
+  function getSubjItemVal(topicId, type, sp) {
+    return !!(sp[topicId] && sp[topicId][type]);
+  }
+
+  // ── Render ─────────────────────────────────────────────────────────────────
+
+  function pctFor(subj, sp) {
+    const total = subj.topics.length * 3;
+    if (!total) return 0;
+    const done = subj.topics.reduce((n, t) => {
+      return n + (getSubjItemVal(t.id,'class',sp)?1:0) + (getSubjItemVal(t.id,'notes',sp)?1:0) + (getSubjItemVal(t.id,'book',sp)?1:0);
+    }, 0);
+    return Math.round((done / total) * 100);
+  }
+
+  function coachingBadge(status) {
+    const map = {
+      completed: ['✓ Done in coaching', 'cb-done'],
+      ongoing:   ['▶ In coaching now', 'cb-ongoing'],
+      upcoming:  ['⏳ Not started yet', 'cb-upcoming'],
+    };
+    const [label, cls] = map[status] || map.upcoming;
+    return `<span class="coach-badge ${cls}">${label}</span>`;
+  }
+
+  function renderSummary() {
+    const sp = getSubjProgress();
+    let totalItems = 0, doneItems = 0;
+    SUBJECTS.forEach(s => {
+      s.topics.forEach(t => {
+        totalItems += 3;
+        doneItems += (getSubjItemVal(t.id,'class',sp)?1:0) + (getSubjItemVal(t.id,'notes',sp)?1:0) + (getSubjItemVal(t.id,'book',sp)?1:0);
+      });
+    });
+    const coaching_done = SUBJECTS.filter(s => s.coaching === 'completed').length;
+    document.getElementById('summaryStats').innerHTML = `
+      <div class="stat-card"><div class="value">${SUBJECTS.length}</div><div class="label">Total Subjects</div></div>
+      <div class="stat-card"><div class="value" style="color:var(--accent2)">${coaching_done}</div><div class="label">Coaching Done</div></div>
+      <div class="stat-card"><div class="value">${totalItems ? Math.round((doneItems/totalItems)*100) : 0}%</div><div class="label">Overall Progress</div></div>`;
+  }
+
+  function buildRow(t, sp, subjId) {
+    const cls = getSubjItemVal(t.id,'class',sp);
+    const notes = getSubjItemVal(t.id,'notes',sp);
+    const book = getSubjItemVal(t.id,'book',sp);
+    return `<tr>
+      <td>${t.text}</td>
+      <td><input type="checkbox" class="track-chk class-chk" ${cls?'checked':''} onchange="check('${t.id}','class','${subjId}')"></td>
+      <td><input type="checkbox" class="track-chk notes-chk" ${notes?'checked':''} onchange="check('${t.id}','notes','${subjId}')"></td>
+      <td><input type="checkbox" class="track-chk book-chk" ${book?'checked':''} onchange="check('${t.id}','book','${subjId}')"></td>
+    </tr>`;
+  }
+
+  function renderSubjects() {
+    const sp = getSubjProgress();
+    const container = document.getElementById('subjectList');
+    container.innerHTML = SUBJECTS.map(s => {
+      const pct = pctFor(s, sp);
+      return `
+        <div class="subj-card" id="sc-${s.id}">
+          <div class="subj-header" onclick="toggleSubj('${s.id}')">
+            <div style="flex:1">
+              <div style="display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap">
+                <span class="subj-title">${s.title}</span>
+                ${coachingBadge(s.coaching)}
+                <span style="font-size:0.72rem;color:var(--text-muted)">${s.paper}</span>
+              </div>
+              <div style="margin-top:0.4rem;display:flex;align-items:center;gap:0.6rem">
+                <div style="flex:1;background:var(--border);border-radius:99px;height:4px;max-width:200px">
+                  <div id="spbar-${s.id}" style="height:4px;border-radius:99px;background:${s.color};width:${pct}%;transition:width 0.3s"></div>
+                </div>
+                <span id="sppct-${s.id}" style="font-size:0.75rem;color:var(--text-muted)">${pct}%</span>
+              </div>
+            </div>
+            <span style="color:var(--text-muted);font-size:0.8rem;margin-left:0.5rem" id="arrow-${s.id}">▸</span>
+          </div>
+          <div class="subj-body" id="sb-${s.id}">
+            <div style="padding:0.75rem 1.25rem;font-size:0.78rem;color:var(--text-muted);background:var(--surface2)">
+              📚 Books: ${s.books.join(' · ')}
+            </div>
+            <div style="overflow-x:auto">
+              <table class="track-table">
+                <thead>
+                  <tr>
+                    <th style="text-align:left">Topic</th>
+                    <th><div class="col-header-wrap"><div class="col-dot" style="background:#6c8ef5"></div><span class="col-label">Class Done</span></div></th>
+                    <th><div class="col-header-wrap"><div class="col-dot" style="background:#52c99e"></div><span class="col-label">Notes Revised</span></div></th>
+                    <th><div class="col-header-wrap"><div class="col-dot" style="background:#f5a623"></div><span class="col-label">Book Read</span></div></th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-${s.id}">
+                  ${s.topics.map(t => buildRow(t, sp, s.id)).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  function toggleSubj(id) {
+    const body = document.getElementById('sb-' + id);
+    const arrow = document.getElementById('arrow-' + id);
+    const header = body.previousElementSibling;
+    const isOpen = body.classList.contains('open');
+    body.classList.toggle('open', !isOpen);
+    header.classList.toggle('open', !isOpen);
+    arrow.textContent = isOpen ? '▸' : '▾';
+  }
+
+  function check(topicId, type, subjId) {
+    toggleSubjItem(topicId, type);
+    // Update just this subject's progress bar
+    const sp = getSubjProgress();
+    const subj = SUBJECTS.find(s => s.id === subjId);
+    if (subj) {
+      const pct = pctFor(subj, sp);
+      const bar = document.getElementById('spbar-' + subjId);
+      const label = document.getElementById('sppct-' + subjId);
+      if (bar) bar.style.width = pct + '%';
+      if (label) label.textContent = pct + '%';
+    }
+    renderSummary();
+  }
+
+  renderSummary();
+  renderSubjects();
+  </script>
+  <script>if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js');</script>
+</body>
+</html>
