@@ -8,105 +8,140 @@
   <meta name="apple-mobile-web-app-title" content="UPSC">
   <meta name="theme-color" content="#0f1117">
   <link rel="manifest" href="manifest.json">
-  <title>Schedule — Tushar Progress</title>
+  <title>Planner — UPSC Tracker</title>
   <link rel="stylesheet" href="css/style.css">
   <style>
-    .day-card { border-radius: var(--radius); padding: 1rem 1.25rem; margin-bottom: 0.75rem; border-left: 4px solid var(--border); background: var(--surface); }
-    .day-card.today { border-left-color: var(--accent); background: #1a1f35; }
-    .day-card.class-day { border-left-color: var(--accent2); }
-    .day-name { font-weight: 700; font-size: 1rem; margin-bottom: 0.5rem; }
-    .day-tag { font-size: 0.72rem; padding: 0.1rem 0.5rem; border-radius: 99px; margin-left: 0.5rem; }
-    .tag-class { background: #183d30; color: var(--accent2); }
-    .tag-office { background: #1d2550; color: #7b9ef5; }
-    .tag-free { background: #3d2e10; color: var(--accent3); }
-    .slot { display: flex; gap: 0.75rem; align-items: flex-start; margin-bottom: 0.5rem; font-size: 0.88rem; }
-    .slot-time { color: var(--accent); font-variant-numeric: tabular-nums; white-space: nowrap; min-width: 110px; font-size: 0.8rem; }
-    .slot-task { color: var(--text); }
-    .slot-class { color: var(--accent2); font-weight: 600; }
-    .slot-office { color: #7b9ef5; }
-    .slot-gym { color: var(--accent3); }
-    .habit-row { display: flex; align-items: center; gap: 0.75rem; padding: 0.6rem 0; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
-    .habit-row:last-child { border-bottom: none; }
-    .habit-check { width: 20px; height: 20px; accent-color: var(--accent2); cursor: pointer; flex-shrink: 0; }
-    .habit-row.done span { text-decoration: line-through; color: var(--text-muted); }
-    .week-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.5rem; margin-top: 0.75rem; }
-    .week-col { text-align: center; }
-    .week-day-name { font-size: 0.72rem; color: var(--text-muted); margin-bottom: 0.3rem; text-transform: uppercase; }
-    .week-day-box { background: var(--surface2); border-radius: 6px; padding: 0.4rem 0.2rem; min-height: 100px; font-size: 0.7rem; color: var(--text-muted); line-height: 1.5; }
-    .week-day-box.today-col { border: 1px solid var(--accent); }
-    @media (max-width: 600px) {
-      .week-grid { grid-template-columns: 1fr; gap: 0.4rem; }
-      .week-col { display: flex; gap: 0.5rem; align-items: flex-start; }
-      .week-day-name { min-width: 30px; padding-top: 0.4rem; }
-      .week-day-box { flex: 1; min-height: unset; text-align: left; padding: 0.4rem 0.6rem; }
+    /* ── Week nav ── */
+    .week-nav {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 0.5rem; margin-bottom: 1rem;
+    }
+    .week-nav button {
+      background: var(--surface2); border: 1px solid var(--border);
+      color: var(--text); border-radius: 6px; padding: 0.4rem 0.85rem;
+      font-size: 0.85rem; cursor: pointer; transition: border-color 0.15s;
+    }
+    .week-nav button:hover { border-color: var(--accent); }
+    .week-nav button:disabled { opacity: 0.3; cursor: default; }
+    .week-label { font-size: 0.88rem; color: var(--text-muted); text-align: center; flex: 1; }
+
+    /* ── Week summary bar ── */
+    .week-summary {
+      display: flex; align-items: center; gap: 1rem;
+      padding: 0.75rem 1.1rem; margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    .ws-pct { font-size: 1.5rem; font-weight: 800; color: var(--accent); min-width: 52px; }
+    .ws-detail { flex: 1; }
+    .ws-label { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 4px; }
+    .ws-bar-track { height: 6px; background: var(--border); border-radius: 99px; overflow: hidden; }
+    .ws-bar-fill { height: 100%; border-radius: 99px; background: var(--accent2); transition: width 0.4s; }
+    .ws-days { display: flex; gap: 4px; flex-wrap: wrap; }
+    .ws-day-dot {
+      width: 28px; height: 28px; border-radius: 5px; font-size: 0.65rem;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      cursor: pointer; border: 1px solid transparent; gap: 1px;
+    }
+    .ws-day-dot.full { background: var(--accent2); color: #111; }
+    .ws-day-dot.partial { background: #3d2e10; color: var(--accent3); }
+    .ws-day-dot.none { background: var(--surface2); color: var(--text-muted); }
+    .ws-day-dot.future { background: var(--surface); border-color: var(--border); color: var(--text-muted); }
+    .ws-day-dot.is-today { outline: 2px solid var(--accent); outline-offset: 1px; }
+    .ws-dot-name { font-size: 0.58rem; text-transform: uppercase; }
+    .ws-dot-val { font-size: 0.6rem; font-weight: 700; }
+
+    /* ── Day cards ── */
+    .day-card {
+      border-radius: var(--radius); background: var(--surface);
+      border: 1px solid var(--border); margin-bottom: 0.75rem; overflow: hidden;
+    }
+    .day-card.is-today { border-color: var(--accent); }
+    .day-card.is-past { opacity: 0.9; }
+    .day-card.is-future { opacity: 0.8; }
+    .day-card-header {
+      display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;
+      padding: 0.8rem 1rem; cursor: pointer; user-select: none;
+      border-bottom: 1px solid var(--border);
+    }
+    .day-card.expanded .day-card-header { border-bottom-color: var(--border); }
+    .day-card:not(.expanded) .day-card-header { border-bottom: none; }
+    .dch-name { font-weight: 700; font-size: 0.95rem; }
+    .dch-date { font-size: 0.8rem; color: var(--text-muted); }
+    .dch-badge { font-size: 0.68rem; padding: 0.1rem 0.45rem; border-radius: 99px; }
+    .badge-class { background: #183d30; color: var(--accent2); }
+    .badge-office { background: #1d2550; color: #7b9ef5; }
+    .dch-progress { margin-left: auto; font-size: 0.78rem; color: var(--text-muted); white-space: nowrap; }
+    .dch-progress.all-done { color: var(--accent2); font-weight: 700; }
+    .dch-progress.some-done { color: var(--accent3); }
+    .dch-toggle { font-size: 0.75rem; color: var(--text-muted); margin-left: 0.25rem; }
+    .day-card-body { padding: 0.7rem 1rem 0.85rem; }
+    .day-card:not(.expanded) .day-card-body { display: none; }
+
+    /* ── Task rows ── */
+    .pt-row {
+      display: flex; align-items: flex-start; gap: 0.7rem;
+      padding: 0.5rem 0.6rem; border-radius: 7px; margin-bottom: 0.35rem;
+      cursor: pointer; transition: background 0.12s;
+      border: 1px solid transparent;
+    }
+    .pt-row:hover { background: var(--surface2); }
+    .pt-row.done { background: #152b22; border-color: #2d6b50; }
+    .pt-row.done .pt-task { text-decoration: line-through; color: var(--text-muted); }
+    .pt-row.done .pt-time { color: #2d6b50; }
+    .pt-row.future-task { opacity: 0.65; }
+    .pt-check { width: 18px; height: 18px; flex-shrink: 0; margin-top: 2px; accent-color: var(--accent2); cursor: pointer; }
+    .pt-meta { flex: 1; }
+    .pt-time { font-size: 0.7rem; color: var(--accent); margin-bottom: 1px; }
+    .pt-task { font-size: 0.85rem; }
+    .future-label { font-size: 0.72rem; color: var(--text-muted); font-style: italic; margin-top: 0.4rem; }
+
+    /* ── Rules card ── */
+    .rules-toggle { font-size: 0.82rem; color: var(--accent); cursor: pointer; margin-top: 0.5rem; display: inline-block; }
+    .rules-list { display: none; }
+    .rules-list.open { display: block; }
+
+    @media (max-width: 480px) {
+      .ws-days { gap: 3px; }
+      .ws-day-dot { width: 24px; height: 24px; }
     }
   </style>
 </head>
 <body>
   <nav>
-    <span class="nav-brand">📚 Tushar</span>
+    <span class="nav-brand">📚 UPSC</span>
     <a href="index.html">Dashboard</a>
-    <a href="schedule.html" class="active">Schedule</a>
+    <a href="schedule.html" class="active">Planner</a>
     <a href="course.html">Course</a>
     <a href="topics.html">Topics</a>
-    <a href="answers.html">Answers</a>
-    <a href="current-affairs.html">Curr. Affairs</a>
-    <a href="scores.html">Scores</a>
-    <a href="notes.html">Notes</a>
+    <a href="subjects.html">Subjects</a>
   </nav>
 
   <main>
-    <h1 id="pageTitle">Today's Schedule</h1>
+    <h1 style="margin-bottom:1rem">Weekly Planner</h1>
 
-    <!-- Today's Habits -->
-    <div class="card">
-      <h2>Daily Habits — <span id="todayHabitLabel"></span></h2>
-      <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:0.75rem">
-        One small action each day compounds over 730 days. Check off as you go.
-      </p>
-      <div id="habitsList">
-        <div class="habit-row" id="hr_answer">
-          <input type="checkbox" class="habit-check" id="h_answer" onchange="saveHabit('answer_written', this.checked)">
-          <span>✍️ Wrote at least 1 answer / solved 1 CSAT question</span>
-        </div>
-        <div class="habit-row" id="hr_ca">
-          <input type="checkbox" class="habit-check" id="h_ca" onchange="saveHabit('ca_read', this.checked)">
-          <span>📰 Read current affairs (The Hindu / Vision IAS / PIB)</span>
-        </div>
-        <div class="habit-row" id="hr_revision">
-          <input type="checkbox" class="habit-check" id="h_revision" onchange="saveHabit('class_revised', this.checked)">
-          <span>🔁 Revised yesterday's / last class's notes</span>
-        </div>
-        <div class="habit-row" id="hr_notes">
-          <input type="checkbox" class="habit-check" id="h_notes" onchange="saveHabit('notes_updated', this.checked)">
-          <span>📓 Updated notes / made a mind map or brief points</span>
-        </div>
-      </div>
-      <p id="habitMsg" style="margin-top:0.6rem;font-size:0.85rem;color:var(--accent2);"></p>
+    <!-- Week navigation -->
+    <div class="week-nav">
+      <button onclick="changeWeek(-1)">‹ Prev</button>
+      <span class="week-label" id="weekLabel"></span>
+      <button onclick="changeWeek(1)" id="nextBtn">Next ›</button>
     </div>
 
-    <!-- Today's Schedule Card -->
-    <div class="card" id="todayCard"></div>
+    <!-- Week summary -->
+    <div class="card week-summary" id="weekSummary"></div>
 
-    <!-- Weekly Schedule -->
+    <!-- Day cards -->
+    <div id="dayCards"></div>
+
+    <!-- Sustainability rules (collapsed by default) -->
     <div class="card">
-      <h2>Weekly Template</h2>
-      <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:0.75rem">
-        Classes: Tue, Wed, Sat, Sun · Weekly CA class: Sun 1:30–5 PM · Office: Mon–Fri
-      </p>
-      <div class="week-grid" id="weekGrid"></div>
-    </div>
-
-    <!-- Sustainable tips -->
-    <div class="card" style="border-left:4px solid var(--accent3)">
-      <h2>Sustainability Rules</h2>
-      <ul style="padding-left:1.2rem;line-height:2;font-size:0.9rem;color:var(--text-muted)">
+      <h2 style="margin-bottom:0.25rem">Sustainability Rules</h2>
+      <span class="rules-toggle" onclick="toggleRules()">Show rules ▾</span>
+      <ul class="rules-list" id="rulesList" style="padding-left:1.2rem;line-height:2;font-size:0.88rem;color:var(--text-muted);margin-top:0.6rem">
         <li><strong style="color:var(--text)">1 answer per day minimum</strong> — even 150 words counts. Don't skip.</li>
         <li><strong style="color:var(--text)">30-min CA daily</strong> — headlines + 2 editorials max. Don't over-read.</li>
-        <li><strong style="color:var(--text)">Revision > new content</strong> — 60% revision, 40% new on weekdays.</li>
+        <li><strong style="color:var(--text)">Revision &gt; new content</strong> — 60% revision, 40% new on weekdays.</li>
         <li><strong style="color:var(--text)">Weekends = depth</strong> — Anthropology deep dives + consolidation on Sat afternoons.</li>
         <li><strong style="color:var(--text)">Sunday plan next week</strong> — 30 min after CA class to plan the 7 days ahead.</li>
-        <li><strong style="color:var(--text)">Gym is non-negotiable</strong> — mental stamina for 9-hour exam days needs physical fitness.</li>
         <li><strong style="color:var(--text)">One off-day per week</strong> — Friday evening or Sunday night: no study, recharge.</li>
       </ul>
     </div>
@@ -114,194 +149,189 @@
 
   <script src="js/storage.js"></script>
   <script>
-    const today = todayISO();
-    const dayName = getDayName(today);
-
-    document.getElementById('pageTitle').textContent = dayName + "'s Schedule";
-    document.getElementById('todayHabitLabel').textContent = formatDate(today);
-
-    // ── Habits ────────────────────────────────────────────────────────────────
-
-    const habitMap = {
-      answer_written: 'h_answer',
-      ca_read: 'h_ca',
-      class_revised: 'h_revision',
-      notes_updated: 'h_notes',
-    };
-
-    function loadHabits() {
-      const h = getHabitsForDate(today);
-      Object.entries(habitMap).forEach(([key, elId]) => {
-        const chk = document.getElementById(elId);
-        if (chk) {
-          chk.checked = !!h[key];
-          const row = chk.closest('.habit-row');
-          if (row) row.classList.toggle('done', !!h[key]);
-        }
-      });
-      updateHabitMsg();
-    }
-
-    function saveHabit(key, val) {
-      const h = getHabitsForDate(today);
-      h[key] = val;
-      saveHabitsForDate(today, h);
-      const row = document.getElementById('h_' + key.split('_')[0])?.closest('.habit-row')
-               || document.getElementById(habitMap[key])?.closest('.habit-row');
-      if (row) row.classList.toggle('done', val);
-      updateHabitMsg();
-    }
-
-    function updateHabitMsg() {
-      const h = getHabitsForDate(today);
-      const done = Object.values(habitMap).filter(id => {
-        const key = Object.entries(habitMap).find(([k, v]) => v === id)?.[0];
-        return key && h[key];
-      }).length;
-      const msgs = ['', 'Good start! 🌱', 'Halfway there! 💪', 'Almost complete! 🔥', 'Perfect day! 🏆'];
-      document.getElementById('habitMsg').textContent = done > 0 ? msgs[done] : '';
-    }
-
-    loadHabits();
-
-    // ── Daily schedule ────────────────────────────────────────────────────────
-
+    // ── Schedule data (same slots tracked on Dashboard) ─────────────────────────
     const schedules = {
-      Monday: {
-        tags: ['office'],
-        slots: [
-          { time: '6:30 – 7:20 AM', task: '✍️ Answer writing — 1 UPSC Mains question (GS or Anthropology)', cls: '' },
-          { time: '7:20 – 7:30 AM', task: 'Quick CA headlines scan', cls: '' },
-          { time: '10:30 AM – 6 PM', task: '🏢 Office — Adobe', cls: 'slot-office' },
-          { time: '6:00 – 7:30 PM', task: '📖 Self-study: Revise last class topic OR Anthropology Paper I/II', cls: '' },
-          { time: '7:30 – 9:00 PM', task: '🏋️ Gym (if gym day) / rest + dinner', cls: 'slot-gym' },
-          { time: '9:00 – 10:30 PM', task: '📰 Current Affairs — The Hindu editorial + PIB summary + make notes', cls: '' },
-          { time: '10:30 – 11 PM', task: '📝 Log today on dashboard. Plan tomorrow morning\'s answer topic.', cls: '' },
-        ]
-      },
-      Tuesday: {
-        tags: ['class', 'office'],
-        slots: [
-          { time: '6:30 – 7:20 AM', task: '🔁 Quick revision — yesterday\'s class notes or pending flashcards', cls: '' },
-          { time: '7:30 – 10:30 AM', task: '📡 Next IAS Live Class (Aptitude / current module)', cls: 'slot-class' },
-          { time: '10:30 AM – 6 PM', task: '🏢 Office — Adobe', cls: 'slot-office' },
-          { time: '6:00 – 7:00 PM', task: '📝 Revise today\'s class notes — within 6 hrs for best retention', cls: '' },
-          { time: '7:00 – 8:30 PM', task: '🏋️ Gym (if gym day) / dinner', cls: 'slot-gym' },
-          { time: '9:00 – 10:30 PM', task: '📰 Current Affairs + Anthropology reading (15 pages)', cls: '' },
-        ]
-      },
-      Wednesday: {
-        tags: ['class', 'office'],
-        slots: [
-          { time: '6:30 – 7:20 AM', task: '🔁 Revise Tuesday\'s class + answer writing — 1 question from class topic', cls: '' },
-          { time: '7:30 – 10:30 AM', task: '📡 Next IAS Live Class', cls: 'slot-class' },
-          { time: '10:30 AM – 6 PM', task: '🏢 Office — Adobe', cls: 'slot-office' },
-          { time: '6:00 – 7:30 PM', task: '✍️ Answer writing — 1 question linking class topics (GS or Anthro)', cls: '' },
-          { time: '7:30 – 9:00 PM', task: '🏋️ Gym (if gym day) / dinner', cls: 'slot-gym' },
-          { time: '9:00 – 10:30 PM', task: '📰 CA + Anthropology reading (Paper II tribal sections)', cls: '' },
-        ]
-      },
-      Thursday: {
-        tags: ['office'],
-        slots: [
-          { time: '6:30 – 7:20 AM', task: '✍️ Answer writing — 1 Anthropology question (Paper I theory)', cls: '' },
-          { time: '10:30 AM – 6 PM', task: '🏢 Office — Adobe', cls: 'slot-office' },
-          { time: '6:00 – 7:30 PM', task: '📖 Deep study — Anthropology Paper I (theories / kinship / religion)', cls: '' },
-          { time: '7:30 – 9:00 PM', task: '🏋️ Gym (if gym day) / dinner', cls: 'slot-gym' },
-          { time: '9:00 – 10:30 PM', task: '📰 CA: compile weekly current affairs notes + Weekly CA prep for Sunday', cls: '' },
-        ]
-      },
-      Friday: {
-        tags: ['office'],
-        slots: [
-          { time: '6:30 – 7:20 AM', task: '🔁 Weekly revision consolidation — skim all notes from Mon–Thu', cls: '' },
-          { time: '10:30 AM – 6 PM', task: '🏢 Office — Adobe', cls: 'slot-office' },
-          { time: '6:00 – 8:00 PM', task: '📖 Anthropology extended session (Paper II — Indian context / tribal issues)', cls: '' },
-          { time: '8:00 – 9:00 PM', task: '🏋️ Gym / dinner / personal time 🌙 (light evening — recharge)', cls: 'slot-gym' },
-          { time: '9:00 – 10:00 PM', task: '📰 CA wrap-up for the week + prepare Sunday CA class material', cls: '' },
-        ]
-      },
-      Saturday: {
-        tags: ['class'],
-        slots: [
-          { time: '6:30 – 7:15 AM', task: '🔁 Light warm-up — revise last 2 classes, skim notes', cls: '' },
-          { time: '7:30 – 10:30 AM', task: '📡 Next IAS Live Class', cls: 'slot-class' },
-          { time: '10:30 AM – 1:30 PM', task: '📝 Consolidate today\'s class notes + write 2 answers (class topics)', cls: '' },
-          { time: '1:30 – 4:00 PM', task: '🏋️ Gym + lunch + rest (mandatory recovery)', cls: 'slot-gym' },
-          { time: '4:00 – 6:00 PM', task: '📖 Anthropology deep dive — pick 1 unit, read thoroughly', cls: '' },
-          { time: '7:00 – 9:00 PM', task: '📝 Weekly self-test — attempt 10 MCQs on week\'s topics (Prelims practice)', cls: '' },
-          { time: '9:00 – 10:00 PM', task: '🗓️ Plan Sunday + upcoming week structure', cls: '' },
-        ]
-      },
-      Sunday: {
-        tags: ['class'],
-        slots: [
-          { time: '7:30 – 10:30 AM', task: '📡 Next IAS Live Class', cls: 'slot-class' },
-          { time: '10:30 AM – 1:00 PM', task: '🍽️ Brunch + rest / light review of morning class notes', cls: '' },
-          { time: '1:30 – 5:00 PM', task: '📡 Next IAS Weekly Current Affairs Class (Live)', cls: 'slot-class' },
-          { time: '5:00 – 6:00 PM', task: '🏋️ Walk / gym / relax', cls: 'slot-gym' },
-          { time: '6:00 – 7:30 PM', task: '📰 Compile CA class notes + add to CA tracker', cls: '' },
-          { time: '7:30 – 8:30 PM', task: '🗓️ Plan next week — which Anthro units, which GS topics, answer topics', cls: '' },
-          { time: '9:00 – 10:00 PM', task: '🌙 Rest — no heavy study. Light revision only if desired.', cls: '' },
-        ]
-      },
+      Monday:    [['6:30–7:20 AM','✍️ Answer writing — 1 UPSC question'],['10:30 AM–6 PM','🏢 Office'],['6:00–7:30 PM','📖 Revision: last class topic OR Anthropology'],['9:00–10:30 PM','📰 Current Affairs (The Hindu + PIB notes)']],
+      Tuesday:   [['6:30–7:20 AM','🔁 Revise yesterday\'s notes / flashcards'],['7:30–10:30 AM','📡 Next IAS Live Class'],['10:30 AM–6 PM','🏢 Office'],['6:00–7:30 PM','📝 Today\'s class notes — revise within 6 hrs'],['9:00–10:30 PM','📰 CA + Anthropology reading']],
+      Wednesday: [['6:30–7:20 AM','✍️ Answer writing — 1 question from class topic'],['7:30–10:30 AM','📡 Next IAS Live Class'],['10:30 AM–6 PM','🏢 Office'],['6:00–7:30 PM','✍️ Answer writing + class notes revision'],['9:00–10:30 PM','📰 CA + Anthropology']],
+      Thursday:  [['6:30–7:20 AM','✍️ Answer writing — Anthropology (Paper I theory)'],['10:30 AM–6 PM','🏢 Office'],['6:00–7:30 PM','📖 Anthropology deep study (Theories / Kinship)'],['9:00–10:30 PM','📰 CA: compile weekly notes']],
+      Friday:    [['6:30–7:20 AM','🔁 Weekly revision consolidation — skim Mon–Thu notes'],['10:30 AM–6 PM','🏢 Office'],['6:00–8:00 PM','📖 Anthropology extended session (Paper II)'],['9:00–10:00 PM','📰 CA wrap-up; prep Sunday CA class material 🌙']],
+      Saturday:  [['6:30–7:15 AM','🔁 Light warm-up — revise last 2 classes'],['7:30–10:30 AM','📡 Next IAS Live Class'],['11 AM–1:30 PM','📝 Consolidate notes + 2 answer writings'],['2:00–5:00 PM','📖 Anthropology deep dive — 1 full unit']],
+      Sunday:    [['7:30–10:30 AM','📡 Next IAS Live Class'],['11 AM–1 PM','🍽️ Rest / light revision'],['1:30–5:00 PM','📡 Next IAS Weekly CA Class (Live)'],['6:00–7:30 PM','📰 Compile CA notes'],['7:30–8:30 PM','🗓️ Plan next week — topics, Anthro units, answer themes']]
     };
 
-    function renderTodayCard() {
-      const s = schedules[dayName];
-      if (!s) return;
-      const tagHTML = s.tags.map(t => {
-        const labels = { class: '📡 Class Day', office: '🏢 Office Day', free: '🏖️ Free Day' };
-        const cls2 = { class: 'tag-class', office: 'tag-office', free: 'tag-free' };
-        return `<span class="day-tag ${cls2[t]}">${labels[t]}</span>`;
-      }).join('');
+    const dayNames = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+    const dayAbbr  = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 
-      const slotsHTML = s.slots.map(sl =>
-        `<div class="slot">
-          <span class="slot-time">${sl.time}</span>
-          <span class="slot-task ${sl.cls}">${sl.task}</span>
-        </div>`
-      ).join('');
+    const todayISO_ = todayISO();
+    let weekOffset = 0;
 
-      document.getElementById('todayCard').innerHTML = `
-        <h2>${dayName} <span style="font-size:0.85rem;font-weight:400;color:var(--text-muted)">${formatDate(today)}</span>${tagHTML}</h2>
-        ${slotsHTML}`;
+    // ── Date helpers ─────────────────────────────────────────────────────────────
+    function getWeekDates(offset) {
+      const base = new Date(todayISO_ + 'T00:00:00');
+      const dow = base.getDay(); // 0=Sun
+      const toMonday = dow === 0 ? 6 : dow - 1;
+      base.setDate(base.getDate() - toMonday + offset * 7);
+      return Array.from({ length: 7 }, (_, i) => {
+        const d = new Date(base);
+        d.setDate(d.getDate() + i);
+        return d.toISOString().slice(0, 10);
+      });
     }
 
-    // ── Weekly grid ───────────────────────────────────────────────────────────
+    function isFuture(iso) { return iso > todayISO_; }
+    function isPast(iso)   { return iso < todayISO_; }
 
-    const weekSummaries = {
-      Monday:    ['6:30 AM Answer writing', 'Office', '6 PM Revision', '9 PM CA'],
-      Tuesday:   ['6:30 AM Notes revision', '7:30 AM Class', 'Office', '6 PM Class notes', '9 PM CA + Anthro'],
-      Wednesday: ['6:30 AM Answer writing', '7:30 AM Class', 'Office', '6 PM Answer writing', '9 PM CA'],
-      Thursday:  ['6:30 AM Anthro answer', 'Office', '6 PM Anthro deep study', '9 PM CA compile'],
-      Friday:    ['6:30 AM Week revision', 'Office', '6 PM Anthro extended', '9 PM CA wrap-up'],
-      Saturday:  ['7:30 AM Class', '11 AM Notes + 2 answers', 'Gym + rest', '4 PM Anthro deep dive', '7 PM Weekly test'],
-      Sunday:    ['7:30 AM Class', '1:30 PM CA Class', '6 PM CA notes', '7:30 PM Week planning'],
-    };
+    function fmtRange(dates) {
+      const [y0, m0, d0] = dates[0].split('-');
+      const [y1, m1, d1] = dates[6].split('-');
+      const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      if (m0 === m1) return `${+d0}–${+d1} ${months[+m0-1]} ${y0}`;
+      return `${+d0} ${months[+m0-1]} – ${+d1} ${months[+m1-1]} ${y1}`;
+    }
 
-    const dayOrder = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-    const dayAbbr = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    // ── Toggle task ───────────────────────────────────────────────────────────────
+    function togglePlanTask(date, idx) {
+      const entry = getTasksForDate(date);
+      const slots = schedules[getDayName(date)] || [];
+      const done = Array.from({ length: slots.length }, (_, i) => !!entry.done[i]);
+      done[idx] = !done[idx];
+      saveTasksForDate(date, done);
+      renderWeek();
+    }
 
-    function renderWeekGrid() {
-      const grid = document.getElementById('weekGrid');
-      grid.innerHTML = dayOrder.map((day, i) => {
-        const isToday = day === dayName;
-        const tags = schedules[day]?.tags || [];
-        const classDay = tags.includes('class');
-        return `<div class="week-col">
-          <div class="week-day-name">${dayAbbr[i]}</div>
-          <div class="week-day-box ${isToday ? 'today-col' : ''}">
-            ${isToday ? '<strong style="color:var(--accent)">TODAY</strong><br>' : ''}
-            ${classDay ? '<span style="color:var(--accent2)">📡 Class</span><br>' : ''}
-            ${weekSummaries[day].map(s => `<span>${s}</span>`).join('<br>')}
-          </div>
+    // ── Render ────────────────────────────────────────────────────────────────────
+    function renderWeek() {
+      const dates = getWeekDates(weekOffset);
+      const isCurrentWeek = weekOffset === 0;
+
+      // Week label
+      document.getElementById('weekLabel').textContent = fmtRange(dates);
+      document.getElementById('nextBtn').disabled = weekOffset >= 0;
+
+      // Week summary
+      let totalTasks = 0, doneTasks = 0;
+      const dotData = dates.map((iso, i) => {
+        const slots = schedules[dayNames[i]] || [];
+        const entry = getTasksForDate(iso);
+        const d = slots.filter((_, j) => !!entry.done[j]).length;
+        totalTasks += slots.length;
+        if (!isFuture(iso)) doneTasks += d;
+        return { iso, name: dayAbbr[i], slots: slots.length, done: d };
+      });
+      const pct = totalTasks ? Math.round((doneTasks / totalTasks) * 100) : 0;
+
+      document.getElementById('weekSummary').innerHTML = `
+        <div class="ws-pct">${pct}%</div>
+        <div class="ws-detail">
+          <div class="ws-label">${doneTasks} of ${totalTasks} tasks done this week</div>
+          <div class="ws-bar-track"><div class="ws-bar-fill" style="width:${pct}%"></div></div>
+        </div>
+        <div class="ws-days">
+          ${dotData.map(({ iso, name, slots, done }) => {
+            const future = isFuture(iso);
+            const cls = future ? 'future' : done === slots && slots > 0 ? 'full' : done > 0 ? 'partial' : 'none';
+            const isToday = iso === todayISO_;
+            return `<div class="ws-day-dot ${cls}${isToday ? ' is-today' : ''}" title="${iso}" onclick="scrollToDay('${iso}')">
+              <span class="ws-dot-name">${name}</span>
+              <span class="ws-dot-val">${future ? '–' : done + '/' + slots}</span>
+            </div>`;
+          }).join('')}
         </div>`;
-      }).join('');
+
+      // Day cards
+      const container = document.getElementById('dayCards');
+      container.innerHTML = '';
+
+      dates.forEach((iso, i) => {
+        const name = dayNames[i];
+        const slots = schedules[name] || [];
+        const entry = getTasksForDate(iso);
+        const done = Array.from({ length: slots.length }, (_, j) => !!entry.done[j]);
+        const doneCount = done.filter(Boolean).length;
+        const future = isFuture(iso);
+        const isToday = iso === todayISO_;
+        const past = isPast(iso);
+
+        const statusClass = isToday ? 'is-today' : past ? 'is-past' : 'is-future';
+        const expanded = isToday || (past && weekOffset < 0) || (!future && !isToday && weekOffset === 0);
+
+        // badges
+        const badges = [];
+        if ([0, 2, 3, 6].includes(new Date(iso + 'T00:00:00').getDay())) badges.push('<span class="dch-badge badge-class">📡 Class</span>');
+        if (new Date(iso + 'T00:00:00').getDay() >= 1 && new Date(iso + 'T00:00:00').getDay() <= 5) badges.push('<span class="dch-badge badge-office">🏢 Office</span>');
+
+        // progress label
+        let progLabel = '', progCls = '';
+        if (future) { progLabel = `${slots.length} planned`; progCls = ''; }
+        else if (doneCount === slots.length && slots.length > 0) { progLabel = '✅ All done'; progCls = 'all-done'; }
+        else if (doneCount > 0) { progLabel = `${doneCount}/${slots.length} done`; progCls = 'some-done'; }
+        else { progLabel = `0/${slots.length} done`; progCls = ''; }
+
+        const [, dm, dd] = iso.split('-');
+        const dateLabel = `${+dd}/${+dm}`;
+
+        const tasksHTML = slots.map(([time, task], j) => {
+          const isDone = done[j];
+          return `<div class="pt-row ${isDone ? 'done' : ''} ${future ? 'future-task' : ''}" id="pt_${iso}_${j}" onclick="togglePlanTask('${iso}',${j})">
+            <input type="checkbox" class="pt-check" ${isDone ? 'checked' : ''} onclick="event.stopPropagation();togglePlanTask('${iso}',${j})">
+            <div class="pt-meta">
+              <div class="pt-time">${time}</div>
+              <div class="pt-task">${task}</div>
+            </div>
+          </div>`;
+        }).join('');
+
+        const card = document.createElement('div');
+        card.className = `day-card ${statusClass}${expanded ? ' expanded' : ''}`;
+        card.id = `daycard_${iso}`;
+        card.innerHTML = `
+          <div class="day-card-header" onclick="toggleCard('${iso}')">
+            <span class="dch-name">${name}${isToday ? ' <span style="font-size:0.7rem;color:var(--accent);font-weight:400">Today</span>' : ''}</span>
+            <span class="dch-date">${dateLabel}</span>
+            ${badges.join('')}
+            <span class="dch-progress ${progCls}" style="margin-left:auto">${progLabel}</span>
+            <span class="dch-toggle" id="tog_${iso}">${expanded ? '▲' : '▼'}</span>
+          </div>
+          <div class="day-card-body">
+            ${tasksHTML}
+            ${future ? '<p class="future-label">Upcoming — tasks will be checkable when the day arrives</p>' : ''}
+          </div>`;
+        container.appendChild(card);
+      });
     }
 
-    renderTodayCard();
-    renderWeekGrid();
+    function toggleCard(iso) {
+      const card = document.getElementById('daycard_' + iso);
+      const tog = document.getElementById('tog_' + iso);
+      const expanded = card.classList.toggle('expanded');
+      tog.textContent = expanded ? '▲' : '▼';
+    }
+
+    function scrollToDay(iso) {
+      const el = document.getElementById('daycard_' + iso);
+      if (el) {
+        el.classList.add('expanded');
+        const tog = document.getElementById('tog_' + iso);
+        if (tog) tog.textContent = '▲';
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+
+    function changeWeek(delta) {
+      if (weekOffset + delta > 0) return;
+      weekOffset += delta;
+      renderWeek();
+    }
+
+    function toggleRules() {
+      const list = document.getElementById('rulesList');
+      const btn = document.querySelector('.rules-toggle');
+      list.classList.toggle('open');
+      btn.textContent = list.classList.contains('open') ? 'Hide rules ▴' : 'Show rules ▾';
+    }
+
+    renderWeek();
   </script>
   <script>if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js');</script>
 </body>

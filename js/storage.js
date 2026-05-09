@@ -8,6 +8,7 @@ const KEYS = {
   BOOKS_PROGRESS: 'books_progress',
   DAILY_HABITS: 'daily_habits',
   MODULE_STATUS: 'module_status',
+  DAILY_TASKS: 'daily_tasks',
 };
 
 function load(key) {
@@ -152,6 +153,23 @@ function updateNoteStatus(id, status) {
 
 function deleteClassNote(id) {
   save(KEYS.CLASS_NOTES, getClassNotes().filter(n => n.id !== id));
+}
+
+// ── Daily Tasks (timetable-based) ─────────────────────────────────────────────
+// entry: { date, done: [bool, bool, ...] } — parallel to schedules[getDayName(date)]
+
+function getDailyTasksAll() { return load(KEYS.DAILY_TASKS) || []; }
+
+function getTasksForDate(date) {
+  return getDailyTasksAll().find(t => t.date === date) || { date, done: [] };
+}
+
+function saveTasksForDate(date, doneArray) {
+  const all = getDailyTasksAll();
+  const idx = all.findIndex(t => t.date === date);
+  const entry = { date, done: doneArray };
+  if (idx >= 0) all[idx] = entry; else all.push(entry);
+  save(KEYS.DAILY_TASKS, all);
 }
 
 // ── Streak ────────────────────────────────────────────────────────────────────

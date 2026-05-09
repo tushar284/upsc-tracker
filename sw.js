@@ -1,4 +1,4 @@
-const CACHE = 'upsc-v1';
+const CACHE = 'upsc-v4';
 const FILES = [
   './index.html',
   './course.html',
