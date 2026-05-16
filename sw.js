@@ -1,4 +1,4 @@
-const CACHE = 'upsc-v4';
+const CACHE = 'upsc-v5';
 const FILES = [
   './index.html',
   './course.html',
@@ -11,6 +11,7 @@ const FILES = [
   './notes.html',
   './css/style.css',
   './js/storage.js',
+  './js/schedules.js',
   './js/topics.js',
   './js/dashboard.js',
   './data/syllabus.js',

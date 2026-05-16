@@ -101,6 +101,8 @@
     .ql-card .ql-label { font-size: 0.8rem; color: var(--text-muted); }
     .ql-card .ql-val { font-size: 1.1rem; font-weight: 700; color: var(--accent); }
     @media(max-width:480px){ .quick-links { grid-template-columns: 1fr 1fr; } }
+    .btn-sm { background:var(--surface2); border:1px solid var(--border); color:var(--text); border-radius:6px; padding:0.35rem 0.7rem; font-size:0.78rem; cursor:pointer; transition:border-color 0.15s; }
+    .btn-sm:hover { border-color:var(--accent); }
   </style>
 </head>
 <body>
@@ -175,24 +177,27 @@
 
     <!-- Quick stats -->
     <div class="quick-links" id="quickLinks"></div>
+
+    <!-- Data backup -->
+    <div class="card" style="padding:0.7rem 1rem;margin-top:0.75rem">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:0.75rem;flex-wrap:wrap">
+        <span style="font-size:0.8rem;color:var(--text-muted)">💾 Data backup</span>
+        <div style="display:flex;gap:0.5rem">
+          <button class="btn-sm" onclick="exportData()">Export JSON</button>
+          <label class="btn-sm" style="cursor:pointer">Import JSON
+            <input type="file" accept=".json" style="display:none" onchange="importData(this.files[0])">
+          </label>
+        </div>
+      </div>
+    </div>
   </main>
 
   <script src="js/storage.js"></script>
+  <script src="js/schedules.js"></script>
   <script src="data/syllabus.js"></script>
   <script>
     const today = todayISO();
     const dayName = getDayName(today);
-
-    // ── Schedules ──────────────────────────────────────────────────────────────
-    const schedules = {
-      Monday:    [['6:30–7:20 AM','✍️ Answer writing — 1 UPSC question'],['10:30 AM–6 PM','🏢 Office'],['6:00–7:30 PM','📖 Revision: last class topic OR Anthropology'],['9:00–10:30 PM','📰 Current Affairs (The Hindu + PIB notes)']],
-      Tuesday:   [['6:30–7:20 AM','🔁 Revise yesterday\'s notes / flashcards'],['7:30–10:30 AM','📡 Next IAS Live Class'],['10:30 AM–6 PM','🏢 Office'],['6:00–7:30 PM','📝 Today\'s class notes — revise within 6 hrs'],['9:00–10:30 PM','📰 CA + Anthropology reading']],
-      Wednesday: [['6:30–7:20 AM','✍️ Answer writing — 1 question from class topic'],['7:30–10:30 AM','📡 Next IAS Live Class'],['10:30 AM–6 PM','🏢 Office'],['6:00–7:30 PM','✍️ Answer writing + class notes revision'],['9:00–10:30 PM','📰 CA + Anthropology']],
-      Thursday:  [['6:30–7:20 AM','✍️ Answer writing — Anthropology (Paper I theory)'],['10:30 AM–6 PM','🏢 Office'],['6:00–7:30 PM','📖 Anthropology deep study (Theories / Kinship)'],['9:00–10:30 PM','📰 CA: compile weekly notes']],
-      Friday:    [['6:30–7:20 AM','🔁 Weekly revision consolidation — skim Mon–Thu notes'],['10:30 AM–6 PM','🏢 Office'],['6:00–8:00 PM','📖 Anthropology extended session (Paper II)'],['9:00–10:00 PM','📰 CA wrap-up; prep Sunday CA class material 🌙']],
-      Saturday:  [['6:30–7:15 AM','🔁 Light warm-up — revise last 2 classes'],['7:30–10:30 AM','📡 Next IAS Live Class'],['11 AM–1:30 PM','📝 Consolidate notes + 2 answer writings'],['2:00–5:00 PM','📖 Anthropology deep dive — 1 full unit']],
-      Sunday:    [['7:30–10:30 AM','📡 Next IAS Live Class'],['11 AM–1 PM','🍽️ Rest / light revision'],['1:30–5:00 PM','📡 Next IAS Weekly CA Class (Live)'],['6:00–7:30 PM','📰 Compile CA notes'],['7:30–8:30 PM','🗓️ Plan next week — topics, Anthro units, answer themes']]
-    };
 
     // ── Day header ─────────────────────────────────────────────────────────────
     document.getElementById('dayHeading').textContent = dayName;

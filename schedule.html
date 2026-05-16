@@ -148,17 +148,8 @@
   </main>
 
   <script src="js/storage.js"></script>
+  <script src="js/schedules.js"></script>
   <script>
-    // ── Schedule data (same slots tracked on Dashboard) ─────────────────────────
-    const schedules = {
-      Monday:    [['6:30–7:20 AM','✍️ Answer writing — 1 UPSC question'],['10:30 AM–6 PM','🏢 Office'],['6:00–7:30 PM','📖 Revision: last class topic OR Anthropology'],['9:00–10:30 PM','📰 Current Affairs (The Hindu + PIB notes)']],
-      Tuesday:   [['6:30–7:20 AM','🔁 Revise yesterday\'s notes / flashcards'],['7:30–10:30 AM','📡 Next IAS Live Class'],['10:30 AM–6 PM','🏢 Office'],['6:00–7:30 PM','📝 Today\'s class notes — revise within 6 hrs'],['9:00–10:30 PM','📰 CA + Anthropology reading']],
-      Wednesday: [['6:30–7:20 AM','✍️ Answer writing — 1 question from class topic'],['7:30–10:30 AM','📡 Next IAS Live Class'],['10:30 AM–6 PM','🏢 Office'],['6:00–7:30 PM','✍️ Answer writing + class notes revision'],['9:00–10:30 PM','📰 CA + Anthropology']],
-      Thursday:  [['6:30–7:20 AM','✍️ Answer writing — Anthropology (Paper I theory)'],['10:30 AM–6 PM','🏢 Office'],['6:00–7:30 PM','📖 Anthropology deep study (Theories / Kinship)'],['9:00–10:30 PM','📰 CA: compile weekly notes']],
-      Friday:    [['6:30–7:20 AM','🔁 Weekly revision consolidation — skim Mon–Thu notes'],['10:30 AM–6 PM','🏢 Office'],['6:00–8:00 PM','📖 Anthropology extended session (Paper II)'],['9:00–10:00 PM','📰 CA wrap-up; prep Sunday CA class material 🌙']],
-      Saturday:  [['6:30–7:15 AM','🔁 Light warm-up — revise last 2 classes'],['7:30–10:30 AM','📡 Next IAS Live Class'],['11 AM–1:30 PM','📝 Consolidate notes + 2 answer writings'],['2:00–5:00 PM','📖 Anthropology deep dive — 1 full unit']],
-      Sunday:    [['7:30–10:30 AM','📡 Next IAS Live Class'],['11 AM–1 PM','🍽️ Rest / light revision'],['1:30–5:00 PM','📡 Next IAS Weekly CA Class (Live)'],['6:00–7:30 PM','📰 Compile CA notes'],['7:30–8:30 PM','🗓️ Plan next week — topics, Anthro units, answer themes']]
-    };
 
     const dayNames = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
     const dayAbbr  = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];

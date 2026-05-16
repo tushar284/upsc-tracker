@@ -6,7 +6,6 @@ const KEYS = {
   CLASS_NOTES: 'class_notes',
   CA_WEEKS: 'ca_weeks',
   BOOKS_PROGRESS: 'books_progress',
-  DAILY_HABITS: 'daily_habits',
   MODULE_STATUS: 'module_status',
   DAILY_TASKS: 'daily_tasks',
 };
@@ -36,23 +35,6 @@ function saveDailyLog(entry) {
 
 function getLogForDate(date) {
   return getDailyLogs().find(l => l.date === date) || null;
-}
-
-// ── Daily Habits ─────────────────────────────────────────────────────────────
-// habits: { date, answer_written, ca_read, class_revised, notes_updated }
-
-function getDailyHabits() { return load(KEYS.DAILY_HABITS) || []; }
-
-function saveHabitsForDate(date, habits) {
-  const all = getDailyHabits();
-  const idx = all.findIndex(h => h.date === date);
-  const entry = { date, ...habits };
-  if (idx >= 0) all[idx] = entry; else all.push(entry);
-  save(KEYS.DAILY_HABITS, all);
-}
-
-function getHabitsForDate(date) {
-  return getDailyHabits().find(h => h.date === date) || {};
 }
 
 // ── Topics ────────────────────────────────────────────────────────────────────
@@ -226,4 +208,34 @@ function isClassDay(iso) {
 function isOfficeDay(iso) {
   const day = new Date(iso + 'T00:00:00').getDay();
   return day >= 1 && day <= 5; // Mon–Fri
+}
+
+// ── Export / Import ───────────────────────────────────────────────────────────
+
+function exportData() {
+  const data = {};
+  Object.values(KEYS).forEach(key => {
+    const val = load(key);
+    if (val !== null) data[key] = val;
+  });
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'upsc-backup-' + todayISO() + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importData(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      Object.entries(data).forEach(([key, val]) => save(key, val));
+      location.reload();
+    } catch { alert('Invalid backup file.'); }
+  };
+  reader.readAsText(file);
 }
