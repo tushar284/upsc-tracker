@@ -32,7 +32,6 @@ const schedules = {
     ['9:00–10:00 PM', '📰 CA wrap-up for the week'],
   ],
   Saturday: [
-    ['6:30–7:15 AM', '🏋️ Gym'],
     ['7:30–10:00 AM', '📡 Next IAS Live Class'],
     ['11:00 AM–1:30 PM', '📝 Consolidate class notes + 2 answer writings'],
     ['2:00–4:30 PM', '🎬 Anthropology video series — 3 lessons'],
